@@ -1,8 +1,0 @@
-Flask
-# https://github.com/ets-labs/python-dependency-injector/pull/752
-dependency-injector==4.42.0b1
-pytest
-sqlalchemy
-flask_pydantic
-pydantic
-python-dotenv

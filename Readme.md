@@ -32,6 +32,7 @@ Best practise for any pyhton development is to start with a virtual environment.
 
 > You benefit from the virtual environment since packages can be installed confidently and will not interfere with another project’s environment.
 
+
 **NOTE**: A realtime virus scanning engine like [Windows Defender](https://www.microsoft.com/en-us/windows/comprehensive-security?r=1) sometimes gets in the way during development. As a result common development actions (compilation, execution of scripts, ..) take ages. To speed up the process it can make sense to disable realtime-scanning during compilation or excluce paths in the scan engine (be aware that this has a security impact!)
 
 - [Deactivate Real-Time Scanning](https://support.microsoft.com/en-us/windows/turn-off-defender-antivirus-protection-in-windows-security-99e6004f-c54c-8509-773c-a4d776b77960)
@@ -44,7 +45,8 @@ Best practise for any pyhton development is to start with a virtual environment.
 ```bash
 # or just pyhton (depending on the os/system used)
 # one typically uses .venv
-python3 -m venv <name-of-your-virtual-environment>
+# either use pyhton or python3
+python -m venv <name-of-your-virtual-environment>
 
 # use the environment
 
@@ -53,13 +55,19 @@ source <name-of-your-virtual-environment>/bin/activate
 
 # windows
 .\<name-of-your-virtual-environment>\Scripts\activate
+
+# afterwards your shell shows the activated venv!
 ```
 
 ### 2. Install dependencies
-We are using the standard python package management tool [pip](https://packaging.python.org/en/latest/guides/tool-recommendations/#installing-packages). There are a couple of other pyhton package managers out there which can be used as well (https://dev.to/adamghill/python-package-manager-comparison-1g98).
+We are using the standard python package management tool [pip](https://packaging.python.org/en/latest/guides/tool-recommendations/#installing-packages). There are a couple of other pyhton package managers out there which can be used as well (https://dev.to/adamghill/python-package-manager-comparison-1g98). 
+
+Python has introduced a `standard` way how a pyhton project should be defined (metadata and including dependencies): [pep-0621](https://peps.python.org/pep-0621/) /  [pyproject.toml](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#writing-pyproject-toml).
+
+The dependencies for this project are defined within the `pyproject.toml` within the `dependencies` section. To install the dependencies the following command is used.
 
 ```bash
-pip install -r requriments
+pip install .
 ```
 
 
