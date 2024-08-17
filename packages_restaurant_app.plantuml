@@ -1,0 +1,25 @@
+@startuml packages_restaurant_app
+set namespaceSeparator none
+package "restaurant_app" as restaurant_app {
+}
+package "restaurant_app.restaurant" as restaurant_app.restaurant {
+}
+package "restaurant_app.restaurant.root_views" as restaurant_app.restaurant.root_views {
+}
+package "restaurant_app.restaurant.services" as restaurant_app.restaurant.services {
+}
+package "restaurant_app.restaurant.services.restaurant" as restaurant_app.restaurant.services.restaurant {
+}
+package "restaurant_app.store" as restaurant_app.store {
+}
+package "restaurant_app.store.database" as restaurant_app.store.database {
+}
+package "restaurant_app.store.models" as restaurant_app.store.models {
+}
+package "restaurant_app.store.restaurant_repository" as restaurant_app.store.restaurant_repository {
+}
+restaurant_app --> restaurant_app.restaurant
+restaurant_app.restaurant.root_views --> restaurant_app.restaurant.services.restaurant
+restaurant_app.store.models --> restaurant_app.store.database
+restaurant_app.store.restaurant_repository --> restaurant_app.store.models
+@enduml

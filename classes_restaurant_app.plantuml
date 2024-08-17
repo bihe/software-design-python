@@ -1,0 +1,20 @@
+@startuml classes_restaurant_app
+set namespaceSeparator none
+class "Database" as restaurant_app.store.database.Database {
+  create_database() -> None
+  session() -> Callable[..., AbstractContextManager[Session]]
+}
+class "RestaurantModel" as restaurant_app.store.models.RestaurantModel {
+  id : Mapped[int]
+  name : Mapped[str]
+}
+class "RestaurantRepository" as restaurant_app.store.restaurant_repository.RestaurantRepository {
+  session_factory : Callable[..., AbstractContextManager[Session]]
+  get_all_restaurants()
+  save(restaurant: RestaurantModel)
+}
+class "RestaurantService" as restaurant_app.restaurant.services.restaurant.RestaurantService {
+  get_service_name() -> str
+}
+restaurant_app.store.restaurant_repository.RestaurantRepository --o restaurant_app.restaurant.services.restaurant.RestaurantService : _repo
+@enduml

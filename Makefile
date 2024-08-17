@@ -26,7 +26,7 @@ ifeq ($(UNAME_M), arm64)
 endif
 
 
-.PHONY: all run
+.PHONY: all run run-flask class-diagram
 
 all: help
 
@@ -40,6 +40,9 @@ run: ## run the python application
 run-flask: ## run the application using flask
 	@-$(MAKE) -s flask-run
 
+class-diagram: ## generate a class-diagram with pyreverse
+	@-$(MAKE) -s generate-class-diagram
+
 # ---------------------------------------------------------------------------
 # internal tasks
 # ---------------------------------------------------------------------------
@@ -51,6 +54,10 @@ python-run:
 flask-run:
 	@echo "  >  executing flask application"
 	flask --app restaurant_app run
+
+generate-class-diagram:
+	@echo "  >  generate a class-diagram with pyreverse"
+	pyreverse -o plantuml --verbose -p restaurant_app ./restaurant_app
 
 ## Help:
 help: ## Show this help.

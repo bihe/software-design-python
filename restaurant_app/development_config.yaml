@@ -1,0 +1,12 @@
+# basic flask app settings
+STATIC_FOLDER: "static"
+TEMPLATES_FOLDER: templates"
+FLASK_ENV: "development"
+FLASK_DEBUG: 1
+DEBUG: true
+TESTING: true
+FLASK_RUN_HOST: "localhost"
+FLASK_RUN_PORT: "9000"
+
+# database settings
+DATABASE_URI: "sqlite:///app.db"
