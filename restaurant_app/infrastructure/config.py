@@ -19,8 +19,6 @@ class Config(yaml.YAMLObject):
         self.DEBUG = True
         self.TESTING = True
         self.DATABASE_URI = ""
-        self.FLASK_RUN_HOST = ""
-        self.FLASK_RUN_PORT = 0
 
     def load_from_data(self, data_map):
         for m in dir(self):

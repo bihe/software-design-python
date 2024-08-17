@@ -67,7 +67,17 @@ Python has introduced a `standard` way how a pyhton project should be defined (m
 The dependencies for this project are defined within the `pyproject.toml` within the `dependencies` section. To install the dependencies the following command is used.
 
 ```bash
+# install the dependencies
 pip install .
+# uninstall our app because we are developing it
+pip uninstall restaurant_app
 ```
 
+#### Optional dependencies
+To generate class-diagrams from the given project we use `pyreverse` which is part of the [pylint](https://pylint.pycqa.org/en/latest/pyreverse.html) package. The application works without the optional dependency as well!
+
+```bash
+# [optional] needed to generate class-diagram
+pip install pylint
+```
 
