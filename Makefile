@@ -26,7 +26,7 @@ ifeq ($(UNAME_M), arm64)
 endif
 
 
-.PHONY: all run run-flask class-diagram
+.PHONY: all run run-flask class-diagram create-db
 
 all: help
 
@@ -35,29 +35,20 @@ all: help
 # ---------------------------------------------------------------------------
 
 run: ## run the python application
-	@-$(MAKE) -s python-run
-
-run-flask: ## run the application using flask
-	@-$(MAKE) -s flask-run
-
-class-diagram: ## generate a class-diagram with pyreverse
-	@-$(MAKE) -s generate-class-diagram
-
-# ---------------------------------------------------------------------------
-# internal tasks
-# ---------------------------------------------------------------------------
-
-python-run:
 	@echo "  >  executing flask application"
 	python run_app.py
 
-flask-run:
+run-flask: ## run the application using flask
 	@echo "  >  executing flask application"
 	flask --app restaurant_app run
 
-generate-class-diagram:
+class-diagram: ## generate a class-diagram with pyreverse
 	@echo "  >  generate a class-diagram with pyreverse"
 	pyreverse -o plantuml --verbose -p restaurant_app ./restaurant_app
+
+create-db: ## create the database based on the modesl
+	@echo "  >  create the database / update modesl"
+	flask --app restaurant_app db create
 
 ## Help:
 help: ## Show this help.

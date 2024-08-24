@@ -5,7 +5,8 @@ from os.path import abspath
 
 import yaml
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, current_app
+from flask.cli import AppGroup, with_appcontext
 
 from .infrastructure.config import Config
 
@@ -62,6 +63,20 @@ def setup_config(base_path, app_environment) -> Config:
         return config
 
 
+# define a CLI logic for the flask applcation
+# a main command "db" with sub-commands "create"
+db_cli = AppGroup("db", short_help="Commands to work with the database")
+
+
+@db_cli.command("create")
+@with_appcontext  # provide the defined flask application to interact with configuration
+def create_database():
+    print(f"re-create the database using the Url: {Config.DATABASE_URI}")
+    db = current_app.container.db()
+    db.drop_database()
+    db.create_database()
+
+
 def create_app():
     basedir = path.abspath(path.dirname(__file__))
     setup_environment(basedir)
@@ -73,23 +88,21 @@ def create_app():
     config = setup_config(basedir, app_environment)
     app.config.from_object(config)
 
+    app.cli.add_command(db_cli)
+
     # set the database uri as a globally available variable
     Config.DATABASE_URI = config.DATABASE_URI
 
     # dependency injection
-    # thie import is not used on the "top" level because
+    # this import is not used on the "top" level because
     # otherwis the Container object woutl be instantiated without a proper init of the configuration
     from .infrastructure.container import Container
 
     container = Container()
     app.container = container
 
-    db = container.db()
-    db.create_database()
-
     # routes via Flask blueprints
     # the same as above, we want to wait for a proper config init until we load the blueprints
-    # if done on "top" leve the DI Container would be instantiated without proper configuration
     from .restaurant import root_views
 
     app.register_blueprint(root_views.bp)
