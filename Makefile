@@ -36,7 +36,7 @@ all: help
 
 run: ## run the python application
 	@echo "  >  executing flask application"
-	python run_app.py
+	python run.py
 
 run-flask: ## run the application using flask
 	@echo "  >  executing flask application"

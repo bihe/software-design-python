@@ -2,6 +2,7 @@
 
 import inspect
 import os
+from os import path
 
 import yaml
 
@@ -32,3 +33,21 @@ class Config(yaml.YAMLObject):
             env_var = os.getenv(m)
             if env_var is not None and not env_var == "":
                 setattr(self, m, env_var)
+
+
+def setup_config(base_path, app_environment) -> Config:
+    config_file = path.join(base_path, f"{app_environment}_config.yaml")
+    if not path.exists(config_file):
+        # try just the config.yaml
+        config_file = path.join(base_path, "config.yaml")
+    if not path.exists(config_file):
+        return None
+
+    print("CNF: will load configuration from: %s" % config_file)
+
+    with open(config_file) as f:
+        # use safe_load instead load
+        data_map = yaml.safe_load(f)
+        config = Config()
+        config.load_from_data(data_map)
+        return config
