@@ -17,5 +17,10 @@
 
     "files.exclude": {
         "**/**/__pycache__/": true
-    }
+    },
+    "python.testing.pytestArgs": [
+        "restaurant_app"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
  }

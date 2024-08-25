@@ -7,3 +7,4 @@ TESTING: false
 
 # database settings
 DATABASE_URI: "sqlite:///app.db"
+DATABASE_ECHO: false

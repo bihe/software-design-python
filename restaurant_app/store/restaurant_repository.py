@@ -1,5 +1,5 @@
 from contextlib import AbstractContextManager
-from typing import Callable
+from typing import Callable, List
 
 from sqlalchemy.orm import Session
 
@@ -12,23 +12,26 @@ class RestaurantRepository:
         self.session_factory = session_factory
         pass
 
-    def get_all_restaurants(self):
+    def get_all_restaurants(self) -> List[RestaurantModel]:
         with self.session_factory() as session:
             restaurantes = session.query(RestaurantModel).all()
             return restaurantes
 
-    def save(self, restaurant: RestaurantModel):
+    def save(self, restaurant: RestaurantModel) -> RestaurantModel:
         with self.session_factory() as session:
-            if restaurant.id > 0:
+            if restaurant.id is not None and restaurant.id > 0:
                 existing = session.get(RestaurantModel, restaurant.id)
                 if existing is not None:
                     existing.name = restaurant.name
+                    existing.open_from = restaurant.open_from
+                    existing.open_until = restaurant.open_until
                     session.add(existing)
                     session.commit()
                     return existing
 
             # new or not found
-            new_restaurant = RestaurantModel(name=restaurant.name)
-            session.add(new_restaurant)
+            if restaurant.address.id is None:
+                session.add(restaurant.address)
+            session.add(restaurant)
             session.commit()
-            return new_restaurant
+            return restaurant

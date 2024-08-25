@@ -11,6 +11,7 @@ class Config(yaml.YAMLObject):
 
     # provide the database uri as an "global variable" for later user
     DATABASE_URI = ""
+    DATABASE_ECHO = False
 
     def __init__(self):
         self.SECRET_KEY = ""
@@ -20,6 +21,7 @@ class Config(yaml.YAMLObject):
         self.DEBUG = True
         self.TESTING = True
         self.DATABASE_URI = ""
+        self.DATABASE_ECHO = False
 
     def load_from_data(self, data_map):
         for m in dir(self):

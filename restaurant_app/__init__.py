@@ -23,8 +23,9 @@ def create_app():
     # add the logic to enable cli commands
     app.cli.add_command(db_cli)
 
-    # set the database uri as a globally available variable
+    # set database seetings as a globally available variables
     Config.DATABASE_URI = config.DATABASE_URI
+    Config.DATABASE_ECHO = config.DATABASE_ECHO
 
     # dependency injection
     # this import is not used on the "top" level because

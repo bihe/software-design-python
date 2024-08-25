@@ -12,8 +12,8 @@ Base = mapper_registry.generate_base()
 
 class Database:
 
-    def __init__(self, db_url: str) -> None:
-        self._engine = create_engine(db_url, echo=True)
+    def __init__(self, db_url: str, echo: bool) -> None:
+        self._engine = create_engine(db_url, echo=echo)
         self._session_factory = orm.scoped_session(
             orm.sessionmaker(
                 autocommit=False,

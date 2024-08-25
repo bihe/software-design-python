@@ -8,3 +8,4 @@ TESTING: true
 
 # database settings
 DATABASE_URI: "sqlite:///app.db"
+DATABASE_ECHO: true
