@@ -10,19 +10,24 @@ def test_restaurant_repository_crud():
     db.create_database()
     repo = RestaurantRepository(db.session)
 
-    addr = AddressModel()
-    addr.city = "Salzburg"
-    addr.country = "AT"
-    addr.street = "Hauptstraße 1"
-    addr.zip = 5020
+    def action(session):
+        repo = RestaurantRepository.create_with_session(session)
+        addr = AddressModel()
+        addr.city = "Salzburg"
+        addr.country = "AT"
+        addr.street = "Hauptstraße 1"
+        addr.zip = 5020
 
-    res = RestaurantModel()
-    res.name = "Test-Restaurant"
-    res.open_from = time(10, 0, 0)
-    res.open_until = time(22, 0, 0)
-    res.address = addr
-    repo.save(res)
-    # assert saved_res.id > 0
+        res = RestaurantModel()
+        res.name = "Test-Restaurant"
+        res.open_from = time(10, 0, 0)
+        res.open_until = time(22, 0, 0)
+        res.address = addr
+        repo.save(res)
+        # assert saved_res.id > 0
+        repo.sync()
 
-    all_restaurants = repo.get_all_restaurants()
-    assert len(all_restaurants) == 1
+        all_restaurants = repo.get_all_restaurants()
+        assert len(all_restaurants) == 1
+
+    repo.unit_of_work(action)
