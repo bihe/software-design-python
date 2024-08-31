@@ -10,10 +10,18 @@ mapper_registry = registry()
 Base = mapper_registry.generate_base()
 
 
-class Database:
+class SqlAlchemyDatbase:
+    """
+    Setup SQLAlchemy with scoped sessions usable for a web-applicaton context
+    https://www.sqlalchemy.org/
+    """
 
     def __init__(self, db_url: str, echo: bool) -> None:
         self._engine = create_engine(db_url, echo=echo)
+
+        # https://docs.sqlalchemy.org/en/20/orm/contextual.html
+        # create user-defined scoped session
+        # the scope in our case is the request by the web-framework
         self._session_factory = orm.scoped_session(
             orm.sessionmaker(
                 autocommit=False,
@@ -28,6 +36,8 @@ class Database:
     def drop_database(self) -> None:
         Base.metadata.drop_all(self._engine)
 
+    # provide a function to access a session via the session_factory
+    # https://docs.python.org/3/library/contextlib.html#contextlib.contextmanager
     @contextmanager
     def session(self) -> Callable[..., AbstractContextManager[Session]]:  # type: ignore
         session: Session = self._session_factory()
