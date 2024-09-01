@@ -4,7 +4,7 @@ from typing import Callable, List, Self
 from sqlalchemy.orm import Session
 
 from .base_repository import BaseRepository
-from .models import AddressModel, RestaurantModel
+from .entities import AddressEntity, RestaurantEntity
 
 
 class RestaurantRepository(BaseRepository):
@@ -16,20 +16,20 @@ class RestaurantRepository(BaseRepository):
     def create_with_session(cls, session: Session) -> Self:
         return RestaurantRepository(session_factory=None, session=session)
 
-    def get_restaurant_by_id(self, id: int) -> RestaurantModel:
+    def get_restaurant_by_id(self, id: int) -> RestaurantEntity:
         session = self.get_session()
-        return session.get(RestaurantModel, id)
+        return session.get(RestaurantEntity, id)
 
-    def get_all_restaurants(self) -> List[RestaurantModel]:
+    def get_all_restaurants(self) -> List[RestaurantEntity]:
         session = self.get_session()
-        restaurantes = session.query(RestaurantModel).all()
+        restaurantes = session.query(RestaurantEntity).all()
         return restaurantes
 
-    def _handle_address(self, address: AddressModel, session: Session) -> AddressModel:
+    def _handle_address(self, address: AddressEntity, session: Session) -> AddressEntity:
         addr = address
         # an id was supplied, load the object from the db
         if address.id is not None:
-            addr = session.get(AddressModel, address.id)
+            addr = session.get(AddressEntity, address.id)
             if addr is None:
                 # could not load the address from the database
                 # we just overwrite the address with a new object
@@ -42,23 +42,23 @@ class RestaurantRepository(BaseRepository):
         session.add(addr)
         return addr
 
-    def find_address(self, address: AddressModel) -> AddressModel:
+    def find_address(self, address: AddressEntity) -> AddressEntity:
         """use the fields in the supplied model to lookup the address"""
         session = self.get_session()
         found_address = (
-            session.query(AddressModel)
-            .filter(AddressModel.street == address.street)
-            .filter(AddressModel.city == address.city)
-            .filter(AddressModel.zip == address.zip)
-            .filter(AddressModel.country == address.country)
+            session.query(AddressEntity)
+            .filter(AddressEntity.street == address.street)
+            .filter(AddressEntity.city == address.city)
+            .filter(AddressEntity.zip == address.zip)
+            .filter(AddressEntity.country == address.country)
             .first()
         )
         return found_address
 
-    def save(self, restaurant: RestaurantModel) -> RestaurantModel:
+    def save(self, restaurant: RestaurantEntity) -> RestaurantEntity:
         session = self.get_session()
         if restaurant.id is not None and restaurant.id > 0:
-            existing = session.get(RestaurantModel, restaurant.id)
+            existing = session.get(RestaurantEntity, restaurant.id)
             if existing is not None:
                 existing.name = restaurant.name
                 existing.open_from = restaurant.open_from
@@ -71,4 +71,5 @@ class RestaurantRepository(BaseRepository):
         # new or not found
         restaurant.address = self._handle_address(restaurant.address, session)
         session.add(restaurant)
+        session.flush()
         return restaurant

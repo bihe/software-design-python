@@ -110,11 +110,7 @@ def import_from_json(filename: str):
     )
     restaurant_model.address = address
 
-    # db: SqlAlchemyDatbase = SqlAlchemyDatbase(db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
-
-    db: SqlAlchemyDatbase = current_app.container.db()
-    print(type(db))
-    session = db.get_sessoin()
-    repo = RestaurantRepository(session_factory=None, session=session)
+    db = SqlAlchemyDatbase(db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
+    repo = RestaurantRepository(db.managed_session)
     svc: RestaurantService = RestaurantService(repo)
     svc.save(restaurant_model)

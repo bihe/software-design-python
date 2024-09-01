@@ -12,4 +12,4 @@ bp = Blueprint("root", __name__)
 @inject
 def hello(restaurant_svc: RestaurantService = Provide[Container.restaurant_svc]):
     LOG.debug("A debug message")
-    return f"this hello-world handler uses the service: {type(restaurant_svc)}"
+    return f"this hello-world handler uses the service: {restaurant_svc}"

@@ -23,7 +23,7 @@ relation_table_reservation = Table(
 
 
 @dataclass
-class RestaurantModel(Base):
+class RestaurantEntity(Base):
     __tablename__ = "RESTAURANT"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -34,14 +34,14 @@ class RestaurantModel(Base):
     open_days: Mapped[str] = mapped_column("open_days", String(255))
 
     address_id: Mapped[int] = mapped_column(ForeignKey("ADDRESS.id"))
-    address: Mapped["AddressModel"] = relationship(back_populates="restaurants")
+    address: Mapped["AddressEntity"] = relationship(back_populates="restaurants")
 
-    menus: Mapped[List["MenuModel"]] = relationship(back_populates="restaurant")
-    tables: Mapped[List["TableModel"]] = relationship(back_populates="restaurant")
+    menus: Mapped[List["MenuEntity"]] = relationship(back_populates="restaurant")
+    tables: Mapped[List["TableEntity"]] = relationship(back_populates="restaurant")
 
 
 @dataclass
-class AddressModel(Base):
+class AddressEntity(Base):
     __tablename__ = "ADDRESS"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -50,11 +50,11 @@ class AddressModel(Base):
     zip: Mapped[str] = mapped_column("zip", String(25))
     country: Mapped[str] = mapped_column("country", String(2))
 
-    restaurants: Mapped[List["RestaurantModel"]] = relationship(back_populates="address")
+    restaurants: Mapped[List["RestaurantEntity"]] = relationship(back_populates="address")
 
 
 @dataclass
-class MenuModel(Base):
+class MenuEntity(Base):
     __tablename__ = "MENU"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -63,13 +63,13 @@ class MenuModel(Base):
     category: Mapped[str] = mapped_column("category", String(255))
 
     retaurant_id: Mapped[int] = mapped_column(ForeignKey("RESTAURANT.id"))
-    restaurant: Mapped["RestaurantModel"] = relationship(back_populates="menus")
+    restaurant: Mapped["RestaurantEntity"] = relationship(back_populates="menus")
 
-    orders: Mapped[List["OrderModel"]] = relationship(secondary=relation_menu_order, back_populates="menus")
+    orders: Mapped[List["OrderEntity"]] = relationship(secondary=relation_menu_order, back_populates="menus")
 
 
 @dataclass
-class TableModel(Base):
+class TableEntity(Base):
     __tablename__ = "GUEST_TABLE"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -77,17 +77,17 @@ class TableModel(Base):
     seats: Mapped[int] = mapped_column("seats")
 
     retaurant_id: Mapped[int] = mapped_column(ForeignKey("RESTAURANT.id"))
-    restaurant: Mapped[RestaurantModel] = relationship(back_populates="tables")
+    restaurant: Mapped[RestaurantEntity] = relationship(back_populates="tables")
 
-    reservations: Mapped[List["ReservationModel"]] = relationship(
+    reservations: Mapped[List["ReservationEntity"]] = relationship(
         secondary=relation_table_reservation, back_populates="tables"
     )
 
-    orders: Mapped[List["OrderModel"]] = relationship(back_populates="table")
+    orders: Mapped[List["OrderEntity"]] = relationship(back_populates="table")
 
 
 @dataclass
-class ReservationModel(Base):
+class ReservationEntity(Base):
     __tablename__ = "RESERVATION"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -98,13 +98,13 @@ class ReservationModel(Base):
     reservation_name: Mapped[str] = mapped_column("reservation_name", String(255))
     reservation_number: Mapped[str] = mapped_column("reservation_number", String(10))
 
-    tables: Mapped[List["TableModel"]] = relationship(
+    tables: Mapped[List["TableEntity"]] = relationship(
         secondary=relation_table_reservation, back_populates="reservations"
     )
 
 
 @dataclass
-class OrderModel(Base):
+class OrderEntity(Base):
     __tablename__ = "TABLE_ORDER"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -112,6 +112,6 @@ class OrderModel(Base):
     waiter: Mapped[str] = mapped_column("waiter", String(255))
 
     table_id: Mapped[int] = mapped_column(ForeignKey("GUEST_TABLE.id"))
-    table: Mapped["TableModel"] = relationship(back_populates="orders")
+    table: Mapped["TableEntity"] = relationship(back_populates="orders")
 
-    menus: Mapped[List["MenuModel"]] = relationship(secondary=relation_menu_order, back_populates="orders")
+    menus: Mapped[List["MenuEntity"]] = relationship(secondary=relation_menu_order, back_populates="orders")

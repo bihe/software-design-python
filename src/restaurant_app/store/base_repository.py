@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from contextlib import AbstractContextManager
-from typing import Callable
+from typing import Any, Callable, List
 
 from sqlalchemy.orm import Session
 
@@ -21,10 +21,10 @@ class BaseRepository(ABC):
             return self._session
         return self._session_factory()
 
-    def unit_of_work(self, action: Callable[[Session], None]):
+    def unit_of_work(self, action: Callable[[Session], List[Any]]) -> List[Any]:
         with self._session_factory() as session:
             with session.begin():
-                action(session)
+                return action(session)
 
     def sync(self):
         self._session.flush()

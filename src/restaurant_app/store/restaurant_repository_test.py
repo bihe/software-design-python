@@ -1,25 +1,25 @@
 from datetime import time
 
 from .database import SqlAlchemyDatbase
-from .models import AddressModel, RestaurantModel
+from .entities import AddressEntity, RestaurantEntity
 from .restaurant_repository import RestaurantRepository
 
 db = SqlAlchemyDatbase("sqlite://", False)
 db.create_database()
-repo = RestaurantRepository(db.session)
+repo = RestaurantRepository(db.managed_session)
 
 
 def test_restaurant_repository_crud():
 
     def action(session):
         repo = RestaurantRepository.create_with_session(session)
-        addr = AddressModel()
+        addr = AddressEntity()
         addr.city = "Salzburg"
         addr.country = "AT"
         addr.street = "Hauptstraße 1"
         addr.zip = 5020
 
-        res = RestaurantModel()
+        res = RestaurantEntity()
         res.name = "Test-Restaurant"
         res.open_from = time(10, 0, 0)
         res.open_until = time(22, 0, 0)

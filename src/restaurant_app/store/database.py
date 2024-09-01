@@ -39,7 +39,7 @@ class SqlAlchemyDatbase:
     # provide a function to access a session via the session_factory
     # https://docs.python.org/3/library/contextlib.html#contextlib.contextmanager
     @contextmanager
-    def session(self) -> Callable[..., AbstractContextManager[Session]]:  # type: ignore
+    def managed_session(self) -> Callable[..., AbstractContextManager[Session]]:  # type: ignore
         session: Session = self._session_factory()
         try:
             yield session
@@ -49,6 +49,3 @@ class SqlAlchemyDatbase:
             raise
         finally:
             session.close()
-
-    def get_sessoin(self) -> Session:
-        return self._session_factory()
