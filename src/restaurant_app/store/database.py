@@ -49,3 +49,6 @@ class SqlAlchemyDatbase:
             raise
         finally:
             session.close()
+
+    def get_sessoin(self) -> Session:
+        return self._session_factory()

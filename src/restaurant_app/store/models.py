@@ -30,6 +30,8 @@ class RestaurantModel(Base):
     name: Mapped[str] = mapped_column("name", String(255))
     open_from: Mapped[datetime.time] = mapped_column("open_from")
     open_until: Mapped[datetime.time] = mapped_column("open_until")
+    # a deliminated list of week-days the restaurant is open
+    open_days: Mapped[str] = mapped_column("open_days", String(255))
 
     address_id: Mapped[int] = mapped_column(ForeignKey("ADDRESS.id"))
     address: Mapped["AddressModel"] = relationship(back_populates="restaurants")

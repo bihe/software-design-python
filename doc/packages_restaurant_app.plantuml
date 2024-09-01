@@ -6,11 +6,15 @@ package "restaurant_app.restaurant" as restaurant_app.restaurant {
 }
 package "restaurant_app.restaurant.root_views" as restaurant_app.restaurant.root_views {
 }
+package "restaurant_app.restaurant.service" as restaurant_app.restaurant.service {
+}
 package "restaurant_app.restaurant.services" as restaurant_app.restaurant.services {
 }
 package "restaurant_app.restaurant.services.restaurant" as restaurant_app.restaurant.services.restaurant {
 }
 package "restaurant_app.store" as restaurant_app.store {
+}
+package "restaurant_app.store.base_repository" as restaurant_app.store.base_repository {
 }
 package "restaurant_app.store.database" as restaurant_app.store.database {
 }
@@ -18,8 +22,14 @@ package "restaurant_app.store.models" as restaurant_app.store.models {
 }
 package "restaurant_app.store.restaurant_repository" as restaurant_app.store.restaurant_repository {
 }
+package "restaurant_app.store.restaurant_repository_test" as restaurant_app.store.restaurant_repository_test {
+}
 restaurant_app --> restaurant_app.restaurant
 restaurant_app.restaurant.root_views --> restaurant_app.restaurant.services.restaurant
 restaurant_app.store.models --> restaurant_app.store.database
+restaurant_app.store.restaurant_repository --> restaurant_app.store.base_repository
 restaurant_app.store.restaurant_repository --> restaurant_app.store.models
+restaurant_app.store.restaurant_repository_test --> restaurant_app.store.database
+restaurant_app.store.restaurant_repository_test --> restaurant_app.store.models
+restaurant_app.store.restaurant_repository_test --> restaurant_app.store.restaurant_repository
 @enduml

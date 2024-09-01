@@ -42,6 +42,19 @@ class RestaurantRepository(BaseRepository):
         session.add(addr)
         return addr
 
+    def find_address(self, address: AddressModel) -> AddressModel:
+        """use the fields in the supplied model to lookup the address"""
+        session = self.get_session()
+        found_address = (
+            session.query(AddressModel)
+            .filter(AddressModel.street == address.street)
+            .filter(AddressModel.city == address.city)
+            .filter(AddressModel.zip == address.zip)
+            .filter(AddressModel.country == address.country)
+            .first()
+        )
+        return found_address
+
     def save(self, restaurant: RestaurantModel) -> RestaurantModel:
         session = self.get_session()
         if restaurant.id is not None and restaurant.id > 0:

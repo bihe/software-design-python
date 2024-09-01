@@ -3,7 +3,7 @@ from os import path
 
 from flask import Flask
 
-from .cli import db_cli
+from .cli.database import db_cli
 from .infrastructure.config import Config, setup_config
 from .infrastructure.environment import setup_environment
 from .infrastructure.logger import setup_logging

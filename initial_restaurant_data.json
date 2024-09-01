@@ -1,0 +1,83 @@
+{
+    "name" : "The Restaurant Name",
+    "openDays" : [ "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ],
+    "openFrom" : [ 10, 0 ],
+    "openUntil" : [ 22, 0 ],
+    "address" : {
+        "street" : "Teststreet 1",
+        "city" : "Salzburg",
+        "zip" : "5020",
+        "countryCode" : "AT"
+    },
+    "tables" : [
+        {
+            "number" : "001",
+            "places" : 4
+        },
+        {
+            "number" : "002",
+            "places" : 2
+        },
+        {
+            "number" : "003",
+            "places" : 5
+        }
+    ],
+    "menus": [
+        {
+            "name": "Menu1",
+            "price": 9.0,
+            "category": "Starter"
+        },
+        {
+            "name": "Menu2",
+            "price": 8.0,
+            "category": "Starter"
+        },
+        {
+            "name": "Menu3",
+            "price": 7.5,
+            "category": "Starter"
+        },
+        {
+            "name": "Menu4",
+            "price": 16.0,
+            "category": "Main Course"
+        },
+        {
+            "name": "Menu5",
+            "price": 16.0,
+            "category": "Main Course"
+        },
+        {
+            "name": "Menu6",
+            "price": 19.0,
+            "category": "Main Course"
+        },
+        {
+            "name": "Menu7",
+            "price": 18.5,
+            "category": "Main Course"
+        },
+        {
+            "name": "Menu8",
+            "price": 8.5,
+            "category": "Desert"
+        },
+        {
+            "name": "Menu9",
+            "price": 9.5,
+            "category": "Desert"
+        },
+        {
+            "name": "Drink1",
+            "price": 5.0,
+            "category": "Drinks"
+        },
+        {
+            "name": "Drink2",
+            "price": 6.0,
+            "category": "Drinks"
+        }
+    ]
+}

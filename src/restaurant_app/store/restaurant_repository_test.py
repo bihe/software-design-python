@@ -23,6 +23,7 @@ def test_restaurant_repository_crud():
         res.name = "Test-Restaurant"
         res.open_from = time(10, 0, 0)
         res.open_until = time(22, 0, 0)
+        res.open_days = "MONDAY;TUESDAY"
         res.address = addr
         saved = repo.save(res)
         repo.sync()
@@ -46,5 +47,14 @@ def test_restaurant_repository_crud():
 
         updated_address = repo.get_restaurant_by_id(updated_restaurant.id)
         assert "Hauptstraße 1 updated" == updated_address.address.street
+
+        # lookup the address
+        repo.sync()  # want to "read" within the transaction
+        addr_lookup = repo.find_address(addr)
+        assert addr_lookup is not None
+        assert addr.street == addr_lookup.street
+        assert addr.city == addr_lookup.city
+        assert addr.zip == addr_lookup.zip
+        assert addr.country == addr_lookup.country
 
     repo.unit_of_work(action)

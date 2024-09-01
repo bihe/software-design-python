@@ -1,0 +1,81 @@
+@startuml classes_restaurant_app
+set namespaceSeparator none
+class "AddressModel" as restaurant_app.store.models.AddressModel {
+  city : Mapped[str]
+  country : Mapped[str]
+  id : Mapped[int]
+  restaurants : Mapped[List['RestaurantModel']]
+  street : Mapped[str]
+  zip : Mapped[str]
+}
+class "BaseRepository" as restaurant_app.store.base_repository.BaseRepository {
+  {abstract}create_with_session()
+  get_session() -> Session
+  sync()
+  unit_of_work(action: Callable[[Session], None])
+}
+class "MenuModel" as restaurant_app.store.models.MenuModel {
+  category : Mapped[str]
+  id : Mapped[int]
+  name : Mapped[str]
+  orders : Mapped[List['OrderModel']]
+  price : Mapped[float]
+  restaurant : Mapped['RestaurantModel']
+  retaurant_id : Mapped[int]
+}
+class "OrderModel" as restaurant_app.store.models.OrderModel {
+  id : Mapped[int]
+  menus : Mapped[List['MenuModel']]
+  table : Mapped['TableModel']
+  table_id : Mapped[int]
+  total : Mapped[float]
+  waiter : Mapped[str]
+}
+class "ReservationModel" as restaurant_app.store.models.ReservationModel {
+  id : Mapped[int]
+  people : Mapped[int]
+  reservation_date : Mapped[datetime.datetime]
+  reservation_name : Mapped[str]
+  reservation_number : Mapped[str]
+  tables : Mapped[List['TableModel']]
+  time_from : Mapped[datetime.time]
+  time_until : Mapped[datetime.time]
+}
+class "RestaurantModel" as restaurant_app.store.models.RestaurantModel {
+  address : Mapped['AddressModel']
+  address_id : Mapped[int]
+  id : Mapped[int]
+  menus : Mapped[List['MenuModel']]
+  name : Mapped[str]
+  open_days : Mapped[str]
+  open_from : Mapped[datetime.time]
+  open_until : Mapped[datetime.time]
+  tables : Mapped[List['TableModel']]
+}
+class "RestaurantRepository" as restaurant_app.store.restaurant_repository.RestaurantRepository {
+  create_with_session(session: Session) -> Self
+  get_all_restaurants() -> List[RestaurantModel]
+  get_restaurant_by_id(id: int) -> RestaurantModel
+  save(restaurant: RestaurantModel) -> RestaurantModel
+}
+class "RestaurantService" as restaurant_app.restaurant.services.restaurant.RestaurantService {
+  get_service_name() -> str
+}
+class "SqlAlchemyDatbase" as restaurant_app.store.database.SqlAlchemyDatbase {
+  create_database() -> None
+  drop_database() -> None
+  session() -> Callable[..., AbstractContextManager[Session]]
+}
+class "TableModel" as restaurant_app.store.models.TableModel {
+  id : Mapped[int]
+  orders : Mapped[List['OrderModel']]
+  reservations : Mapped[List['ReservationModel']]
+  restaurant : Mapped[RestaurantModel]
+  retaurant_id : Mapped[int]
+  seats : Mapped[int]
+  table_number : Mapped[str]
+}
+restaurant_app.store.restaurant_repository.RestaurantRepository --|> restaurant_app.store.base_repository.BaseRepository
+restaurant_app.store.models.AddressModel --o restaurant_app.store.models.RestaurantModel : address
+restaurant_app.store.restaurant_repository.RestaurantRepository --o restaurant_app.restaurant.services.restaurant.RestaurantService : _repo
+@enduml

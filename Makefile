@@ -36,19 +36,19 @@ all: help
 
 run: ## run the python application
 	@echo "  >  executing flask application"
-	python run.py
+	python src/run.py
 
 run-flask: ## run the application using flask
 	@echo "  >  executing flask application"
-	flask --app restaurant_app run
+	flask --app src/restaurant_app run
 
 class-diagram: ## generate a class-diagram with pyreverse
 	@echo "  >  generate a class-diagram with pyreverse"
-	pyreverse -o plantuml --verbose -p restaurant_app ./restaurant_app
+	pyreverse -o plantuml --verbose -p restaurant_app -d ./doc ./src/restaurant_app
 
 create-db: ## create the database based on the modesl
 	@echo "  >  create the database / update modesl"
-	flask --app restaurant_app db create
+	flask --app src/restaurant_app db create app.db
 
 ## Help:
 help: ## Show this help.
