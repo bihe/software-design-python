@@ -46,9 +46,13 @@ class-diagram: ## generate a class-diagram with pyreverse
 	@echo "  >  generate a class-diagram with pyreverse"
 	pyreverse -o plantuml --verbose -p restaurant_app -d ./doc ./src/restaurant_app
 
-create-db: ## create the database based on the modesl
-	@echo "  >  create the database / update modesl"
+db-create: ## create the database based on the models
+	@echo "  >  create the database / update models"
 	flask --app src/restaurant_app db create app.db
+
+db-import: ## import initial data into database
+	@echo "  >  import initial data from 'initial_restaurant_data.json'"
+	flask --app src/restaurant_app db import ./initial_restaurant_data.json
 
 ## Help:
 help: ## Show this help.

@@ -24,7 +24,9 @@ class BaseRepository(ABC):
     def unit_of_work(self, action: Callable[[Session], List[Any]]) -> List[Any]:
         with self._session_factory() as session:
             with session.begin():
-                return action(session)
+                result = action(session)
+                session.commit()
+                return result
 
     def sync(self):
         self._session.flush()

@@ -1,3 +1,4 @@
+import datetime
 from datetime import time
 from typing import List
 
@@ -103,7 +104,7 @@ class RestaurantService:
 
     def save(self, restaurant: RestaurantModel) -> RestaurantModel:
 
-        def save(session) -> List[RestaurantModel]:
+        def work_in_transaction(session) -> List[RestaurantModel]:
             repo = RestaurantRepository.create_with_session(session)
 
             # lookup the address first
@@ -126,10 +127,18 @@ class RestaurantService:
 
             # determine if this is a new entry or if the restaurant-entry exists
             store_restaurant = RestaurantEntity()
-            if restaurant.id is not None:
+            res_id = restaurant.id or 0
+            if res_id > 0:
                 store_restaurant = repo.get_restaurant_by_id(restaurant.id)
                 if store_restaurant is None:
                     raise NotFoundError(f"a restaurant with id '{restaurant.id}' is not available")
+            else:
+                # check if this is an existing restaurant
+                store_restaurant = repo.find_restaurants_by_name_and_address(restaurant.name, addr)
+                if store_restaurant is not None:
+                    store_restaurant.modified = datetime.datetime.now(datetime.UTC)
+                else:
+                    store_restaurant = RestaurantEntity()
 
             # set the values of the restaurant with the provided values
             store_restaurant.name = restaurant.name
@@ -143,7 +152,7 @@ class RestaurantService:
             result.append(_mapEntityToModel(saved))
             return result
 
-        result = self._repo.unit_of_work(save)
+        result = self._repo.unit_of_work(work_in_transaction)
         if result is None or len(result) == 0:
             return None
         return result[0]

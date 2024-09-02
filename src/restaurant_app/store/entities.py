@@ -22,11 +22,25 @@ relation_table_reservation = Table(
 )
 
 
+class BaseEntity(Base):
+    """abstract base-class defining common columns for all entities"""
+
+    __abstract__ = True
+
+    # https://datawookie.dev/blog/2023/05/column-order-inheritance-declarative-base/
+    id: Mapped[int] = mapped_column(
+        primary_key=True, autoincrement=True, index=True, nullable=False, unique=True, sort_order=-1
+    )
+    created: Mapped[datetime.datetime] = mapped_column(
+        nullable=False, default=datetime.datetime.now(datetime.timezone.utc)
+    )
+    modified: Mapped[datetime.datetime] = mapped_column(nullable=True, default=None, onupdate=datetime.datetime.now)
+
+
 @dataclass
-class RestaurantEntity(Base):
+class RestaurantEntity(BaseEntity):
     __tablename__ = "RESTAURANT"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", String(255))
     open_from: Mapped[datetime.time] = mapped_column("open_from")
     open_until: Mapped[datetime.time] = mapped_column("open_until")
@@ -41,10 +55,9 @@ class RestaurantEntity(Base):
 
 
 @dataclass
-class AddressEntity(Base):
+class AddressEntity(BaseEntity):
     __tablename__ = "ADDRESS"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     street: Mapped[str] = mapped_column("street", String(255))
     city: Mapped[str] = mapped_column("city", String(255))
     zip: Mapped[str] = mapped_column("zip", String(25))
@@ -54,10 +67,9 @@ class AddressEntity(Base):
 
 
 @dataclass
-class MenuEntity(Base):
+class MenuEntity(BaseEntity):
     __tablename__ = "MENU"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column("name", String(255))
     price: Mapped[float] = mapped_column("price")
     category: Mapped[str] = mapped_column("category", String(255))
@@ -69,10 +81,9 @@ class MenuEntity(Base):
 
 
 @dataclass
-class TableEntity(Base):
+class TableEntity(BaseEntity):
     __tablename__ = "GUEST_TABLE"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     table_number: Mapped[str] = mapped_column("table_number", String(255))
     seats: Mapped[int] = mapped_column("seats")
 
@@ -87,10 +98,9 @@ class TableEntity(Base):
 
 
 @dataclass
-class ReservationEntity(Base):
+class ReservationEntity(BaseEntity):
     __tablename__ = "RESERVATION"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     reservation_date: Mapped[datetime.datetime] = mapped_column("reservation_date")
     time_from: Mapped[datetime.time] = mapped_column("time_from")
     time_until: Mapped[datetime.time] = mapped_column("time_until")
@@ -104,10 +114,9 @@ class ReservationEntity(Base):
 
 
 @dataclass
-class OrderEntity(Base):
+class OrderEntity(BaseEntity):
     __tablename__ = "TABLE_ORDER"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     total: Mapped[float] = mapped_column("total")
     waiter: Mapped[str] = mapped_column("waiter", String(255))
 
