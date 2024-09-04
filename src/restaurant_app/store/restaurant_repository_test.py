@@ -1,30 +1,13 @@
-from datetime import time
-
-from .database import SqlAlchemyDatbase
-from .entities import AddressEntity, RestaurantEntity
+from .repository_test_helpers import create_restaurant_data, get_database
 from .restaurant_repository import RestaurantRepository
-
-db = SqlAlchemyDatbase("sqlite://", False)
-db.create_database()
-repo = RestaurantRepository(db.managed_session)
 
 
 def test_restaurant_repository_crud():
 
     def action(session):
+        res = create_restaurant_data()
+        addr = res.address
         repo = RestaurantRepository.create_with_session(session)
-        addr = AddressEntity()
-        addr.city = "Salzburg"
-        addr.country = "AT"
-        addr.street = "Hauptstraße 1"
-        addr.zip = 5020
-
-        res = RestaurantEntity()
-        res.name = "Test-Restaurant"
-        res.open_from = time(10, 0, 0)
-        res.open_until = time(22, 0, 0)
-        res.open_days = "MONDAY;TUESDAY"
-        res.address = addr
         saved = repo.save(res)
         repo.sync()
 
@@ -57,4 +40,9 @@ def test_restaurant_repository_crud():
         assert addr.zip == addr_lookup.zip
         assert addr.country == addr_lookup.country
 
+    db = get_database()
+    repo = RestaurantRepository(db.managed_session)
     repo.unit_of_work(action)
+
+    all_restaurants = repo.get_all_restaurants()
+    assert len(all_restaurants) == 1

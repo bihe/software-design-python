@@ -10,7 +10,7 @@ from flask.cli import AppGroup, with_appcontext
 from marshmallow_dataclass import dataclass
 
 from ..infrastructure.config import Config
-from ..restaurant.models import AddressModel, RestaurantModel, WeekDay
+from ..restaurant.models import AddressModel, MenuModel, RestaurantModel, WeekDay
 from ..restaurant.service import RestaurantService
 from ..store.database import SqlAlchemyDatbase
 from ..store.restaurant_repository import RestaurantRepository
@@ -109,6 +109,12 @@ def import_from_json(filename: str):
         countryCode=restaurant.address.countryCode,
     )
     restaurant_model.address = address
+
+    # map to MenuModel
+    menus: List[MenuModel] = []
+    for menu in restaurant.menus:
+        menus.append(MenuModel(id=None, name=menu.name, price=menu.price, category=menu.category))
+    restaurant_model.menus = menus
 
     db = SqlAlchemyDatbase(db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
     repo = RestaurantRepository(db.managed_session)

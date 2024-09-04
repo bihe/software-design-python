@@ -1,8 +1,8 @@
-import datetime
 from datetime import time
 from typing import List
 
-from ..store.entities import AddressEntity, RestaurantEntity
+from ..store.entities import AddressEntity, MenuEntity, RestaurantEntity
+from ..store.menu_repository import MenuRepository
 from ..store.restaurant_repository import RestaurantRepository
 from .models import AddressModel, MenuModel, RestaurantModel, TableModel, WeekDay
 
@@ -10,8 +10,7 @@ from .models import AddressModel, MenuModel, RestaurantModel, TableModel, WeekDa
 class NotFoundError(Exception):
     """An entry cannot be found error"""
 
-    def __init__(self, salary, message):
-        self.salary = salary
+    def __init__(self, message):
         self.message = message
         super().__init__(self.message)
 
@@ -102,10 +101,19 @@ class RestaurantService:
     def __str__(self) -> str:
         return "RestaurantService"
 
+    def get_all(self) -> List[RestaurantModel]:
+        restaurants: List[RestaurantModel] = []
+        res = self._repo.get_all_restaurants()
+        if res is not None:
+            for r in res:
+                restaurants.append(_mapEntityToModel(r))
+        return restaurants
+
     def save(self, restaurant: RestaurantModel) -> RestaurantModel:
 
         def work_in_transaction(session) -> List[RestaurantModel]:
-            repo = RestaurantRepository.create_with_session(session)
+            res_repo = RestaurantRepository.create_with_session(session)
+            menu_repo = MenuRepository.create_with_session(session)
 
             # lookup the address first
             a = restaurant.address
@@ -115,7 +123,7 @@ class RestaurantService:
             find_addr.zip = a.zip
             find_addr.country = a.countryCode
 
-            addr = repo.find_address(find_addr)
+            addr = res_repo.find_address(find_addr)
             if addr is None:
                 # nothing found, use the provided address
                 a = restaurant.address
@@ -129,16 +137,14 @@ class RestaurantService:
             store_restaurant = RestaurantEntity()
             res_id = restaurant.id or 0
             if res_id > 0:
-                store_restaurant = repo.get_restaurant_by_id(restaurant.id)
+                store_restaurant = res_repo.get_restaurant_by_id(restaurant.id)
                 if store_restaurant is None:
                     raise NotFoundError(f"a restaurant with id '{restaurant.id}' is not available")
             else:
                 # check if this is an existing restaurant
-                store_restaurant = repo.find_restaurants_by_name_and_address(restaurant.name, addr)
-                if store_restaurant is not None:
-                    store_restaurant.modified = datetime.datetime.now(datetime.UTC)
-                else:
-                    store_restaurant = RestaurantEntity()
+                store_restaurant = (
+                    res_repo.find_restaurants_by_name_and_address(restaurant.name, addr) or RestaurantEntity()
+                )
 
             # set the values of the restaurant with the provided values
             store_restaurant.name = restaurant.name
@@ -147,7 +153,15 @@ class RestaurantService:
             store_restaurant.open_days = _mapDayFromEnum(restaurant.openDays)
             store_restaurant.address = addr
 
-            saved = repo.save(store_restaurant)
+            saved = res_repo.save(store_restaurant)
+
+            # process the menu entries
+            if restaurant.menus is not None:
+                for menu in restaurant.menus:
+                    menu_repo.save(
+                        MenuEntity(name=menu.name, price=menu.price, category=menu.category, restaurant=saved)
+                    )
+
             result: List[RestaurantModel] = []
             result.append(_mapEntityToModel(saved))
             return result

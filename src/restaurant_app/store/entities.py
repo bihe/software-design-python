@@ -48,10 +48,14 @@ class RestaurantEntity(BaseEntity):
     open_days: Mapped[str] = mapped_column("open_days", String(255))
 
     address_id: Mapped[int] = mapped_column(ForeignKey("ADDRESS.id"))
-    address: Mapped["AddressEntity"] = relationship(back_populates="restaurants")
-
-    menus: Mapped[List["MenuEntity"]] = relationship(back_populates="restaurant")
-    tables: Mapped[List["TableEntity"]] = relationship(back_populates="restaurant")
+    # as those tables form the "basic-data" or "master-data" of a restaurant
+    # they are fetched as well when a restaurant is queried
+    # if the option for lazy is not defined, SqlAlchemy can raise an error if
+    # objects are accessed outstide of a SqlAlchemy Session
+    # @see https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html
+    address: Mapped["AddressEntity"] = relationship(back_populates="restaurants", lazy="joined")
+    menus: Mapped[List["MenuEntity"]] = relationship(back_populates="restaurant", lazy="joined")
+    tables: Mapped[List["TableEntity"]] = relationship(back_populates="restaurant", lazy="joined")
 
 
 @dataclass
