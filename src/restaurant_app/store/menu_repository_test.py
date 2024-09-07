@@ -18,6 +18,7 @@ def test_menu_repository_crud():
 
         menu = MenuEntity(name="MenuEntry1", category="Category1", price=14.50, restaurant=res)
         menu = menu_repo.save(menu)
+        res_repo.sync()
 
         menu_lookup = menu_repo.get_menu_by_name("MenuEntry1", res.id)
         assert menu_lookup is not None

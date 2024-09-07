@@ -42,6 +42,10 @@ run-flask: ## run the application using flask
 	@echo "  >  executing flask application"
 	flask --app src/restaurant_app run
 
+test: ## run the unit-tests of the application
+	@echo "  >  run unit tests"
+	pytest --cov
+
 class-diagram: ## generate a class-diagram with pyreverse
 	@echo "  >  generate a class-diagram with pyreverse"
 	pyreverse -o plantuml --verbose -p restaurant_app -d ./doc ./src/restaurant_app

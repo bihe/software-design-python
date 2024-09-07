@@ -46,6 +46,41 @@ def _mapDayToEnum(openDays: str) -> List[WeekDay]:
     return days
 
 
+# TODO: for service tests - mock repositories
+# https://python-dependency-injector.ets-labs.org/examples/fastapi-sqlalchemy.html
+
+
+# TODO: see if the pydantic approach simplifies mapping
+# for business logic validation of data pydantic would be nice any-way
+# from pydantic import BaseModel
+
+# class AddressEntity(BaseModel):
+#     street: str
+#     city: str
+
+# class UserEntity(BaseModel):
+#     id: int
+#     name: str
+#     email: str
+#     address: AddressEntity
+
+# class AddressDTO(BaseModel):
+#     street: str
+#     city: str
+
+# class UserDTO(BaseModel):
+#     id: int
+#     name: str
+#     address: AddressDTO
+
+# def map_user_entity_to_dto(user_entity: UserEntity) -> UserDTO:
+#     return UserDTO(**user_entity.dict())
+
+# address_entity = AddressEntity(street="123 Main St", city="Anytown")
+# user_entity = UserEntity(id=1, name="John Doe", email="john@example.com", address=address_entity)
+# user_dto = map_user_entity_to_dto(user_entity)
+
+
 def _mapEntityToModel(res: RestaurantEntity) -> RestaurantModel:
     open_days = _mapDayToEnum(res.open_days)
 

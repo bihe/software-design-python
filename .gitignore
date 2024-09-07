@@ -163,3 +163,5 @@ cython_debug/
 
 app.db
 app.log
+
+lcov.info

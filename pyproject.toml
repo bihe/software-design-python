@@ -11,6 +11,7 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "PyYAML>=6.0.2",
     "pytest>=8.3.2",
+    "pytest-cov>=5.0.0",
     "marshmallow>=3.22.0",
     "marshmallow-dataclass>=8.7.0"
 ]
@@ -33,3 +34,9 @@ classifiers = [
 [project.urls]
 Homepage = "https://its-git.fh-salzburg.ac.at/hbinggl/software-design-python"
 Repository = "https://its-git.fh-salzburg.ac.at/hbinggl/software-design-python"
+
+[tool.coverage.run]
+source = ["restaurant_app"]
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-report=lcov:lcov.info --cov-report=term"
