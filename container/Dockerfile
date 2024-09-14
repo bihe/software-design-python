@@ -7,56 +7,46 @@
 #
 # there are a couple of images available: https://hub.docker.com/_/python/
 
-FROM python:3.11-bookworm as builder
+FROM python:3.12-bookworm as builder
 
 # define a place where the output of the build is put
 WORKDIR /app
 
-# we setup poetry in debian
+# initial project setup
+COPY pyproject.toml .
+COPY src ./src
 
-RUN pip install poetry==1.4.2
-
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
-
-# use the project to the working directory
-COPY pyproject.toml poetry.lock ./
-
-# the mysql client for python needs some development-libraries
-# this is a very good example why a multi-stage docker file is better for building
-# see this comment from the python mysql client:
-# 'Building mysqlclient on Windows is very hard. But there are some binary wheels you can install easily....'
-RUN apt-get update && apt-get install -y python3-dev default-libmysqlclient-dev build-essential pkg-config
-RUN poetry add mysqlclient
-RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir .
 
 # ---------------------------------------------------------------------------
 # the second) stage is used for runtime/production
 # we have now a different base-image which is smaller for production
-FROM python:3.11-slim-bookworm
+FROM python:3.12-slim-bookworm
 
-WORKDIR /opt/django-demo
+WORKDIR /opt/restaurant_app
 
-# provide a DJANGO admin user and point to the specific production settings file
-ENV DJANGO_SUPERUSER_PASSWORD=admin \
-    DJANGO_SETTINGS_MODULE=swd_django_demo.settings_prod \
-    PATH="/opt/django-demo/.venv/bin:$PATH"
+# Copy the installed dependencies and app from the previous stage
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 
 # still we needs some additional stuff
 # we need mariadb library (very, very similar to mysql) to access the db
 # this is the runtime library dependency of mysqlclient
 RUN apt-get update && apt-get install -y libmariadb3
 
-# copy the poetry created python environment to the runtime image
-COPY --from=builder /app/.venv /opt/django-demo/.venv
-
 # it is a best practise to create a seperate user and not execute everything with root
-RUN useradd -d /opt/django-demo django-demo-user
-USER django-demo-user
+RUN useradd -d /opt/restaurant_app restaurant-app-user
 
 # copy our project to the application directory
-COPY --chown=django-demo-user . /opt/django-demo
+RUN chown restaurant-app-user /opt/restaurant_app
+COPY --chown=restaurant-app-user ./app.db /opt/restaurant_app/app.db
+COPY --from=builder --chown=restaurant-app-user /app/src/run.py /opt/restaurant_app/run.py
+COPY --from=builder --chown=restaurant-app-user /app/src/restaurant_app /opt/restaurant_app/restaurant_app
 
-ENTRYPOINT ["/opt/django-demo/entrypoint.sh"]
+USER restaurant-app-user
+EXPOSE 9000
+
+ENV FLASK_RUN_HOST 0.0.0.0
+ENV FLASK_RUN_PORT 9000
+
+CMD ["python","run.py"]

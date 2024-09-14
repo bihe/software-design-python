@@ -58,6 +58,14 @@ db-import: ## import initial data into database
 	@echo "  >  import initial data from 'initial_restaurant_data.json'"
 	flask --app src/restaurant_app db import ./data/initial_restaurant_data.json
 
+container-build: ## build container image of the restaurant-app
+	@echo "  >  build the container-image"
+	docker build -t restaurant_app -f ./container/Dockerfile -t restaurant_app .
+
+container-run: ## run the estaurant-app container
+	@echo "  >  run the container-image"
+	docker stop restaurant-app && docker rm restaurant-app && docker run -p 9000:9000 --name restaurant-app restaurant_app
+
 ## Help:
 help: ## Show this help.
 	@echo ''

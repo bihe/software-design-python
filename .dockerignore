@@ -2,3 +2,8 @@ db.sqlite3
 .git/
 __pychache__/
 .vscode/
+data/
+doc/
+build/
+.pytest_cache/
+src/restaurant_app.egg-info/
