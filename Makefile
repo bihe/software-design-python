@@ -56,7 +56,7 @@ db-create: ## create the database based on the models
 
 db-import: ## import initial data into database
 	@echo "  >  import initial data from 'initial_restaurant_data.json'"
-	flask --app src/restaurant_app db import ./initial_restaurant_data.json
+	flask --app src/restaurant_app db import ./data/initial_restaurant_data.json
 
 ## Help:
 help: ## Show this help.

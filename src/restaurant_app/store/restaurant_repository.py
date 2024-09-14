@@ -59,7 +59,7 @@ class RestaurantRepository(BaseRepository):
         with self.get_session() as session:
             restaurant_id = restaurant.id or 0
             if restaurant_id > 0:
-                existing = session.get(RestaurantEntity, restaurant.id)
+                existing = session.get(RestaurantEntity, restaurant_id)
                 if existing is not None:
                     existing.name = restaurant.name
                     existing.open_from = restaurant.open_from

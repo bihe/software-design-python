@@ -30,7 +30,7 @@
           "args": [
               "db",
               "import",
-              "./initial_restaurant_data.json"
+              "./data/initial_restaurant_data.json"
           ],
           "jinja": true,
           "autoStartBrowser": false,

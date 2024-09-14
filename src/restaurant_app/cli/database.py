@@ -10,7 +10,7 @@ from flask.cli import AppGroup, with_appcontext
 from marshmallow_dataclass import dataclass
 
 from ..infrastructure.config import Config
-from ..restaurant.models import AddressModel, MenuModel, RestaurantModel, WeekDay
+from ..restaurant.models import AddressModel, MenuModel, RestaurantModel, TableModel, WeekDay
 from ..restaurant.service import RestaurantService
 from ..store.database import SqlAlchemyDatbase
 from ..store.restaurant_repository import RestaurantRepository
@@ -26,12 +26,9 @@ def create_database(filename: str):
         print(f"filename: {filename}")
         if filename is not None:
             file_path = os.path.join("./", filename)
-            if not os.path.exists(file_path):
-                print(f"SQLITE: the provided filename is not available '{filename}'")
-                return
-
-            print(f"SQLITE: delete the database file: '{filename}'")
-            os.remove(os.path.join("./", filename))
+            if os.path.exists(file_path):
+                print(f"SQLITE: delete the database file: '{filename}'")
+                os.remove(os.path.join("./", filename))
 
     print(f"re-create the database using the Url: {Config.DATABASE_URI}")
     db = current_app.container.db()
@@ -115,6 +112,12 @@ def import_from_json(filename: str):
     for menu in restaurant.menus:
         menus.append(MenuModel(id=None, name=menu.name, price=menu.price, category=menu.category))
     restaurant_model.menus = menus
+
+    # map to TableModel
+    tables: List[TableModel] = []
+    for table in restaurant.tables:
+        tables.append(TableModel(id=None, places=table.places, number=table.number))
+    restaurant_model.tables = tables
 
     db = SqlAlchemyDatbase(db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
     repo = RestaurantRepository(db.managed_session)

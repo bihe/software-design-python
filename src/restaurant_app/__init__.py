@@ -29,7 +29,7 @@ def create_app():
 
     # dependency injection
     # this import is not used on the "top" level because
-    # otherwis the Container object woutl be instantiated without a proper init of the configuration
+    # otherwise the Container object woutl be instantiated without a proper init of the configuration
     from .infrastructure.container import Container
 
     container = Container()

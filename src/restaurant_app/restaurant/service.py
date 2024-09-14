@@ -1,9 +1,10 @@
 from datetime import time
 from typing import List
 
-from ..store.entities import AddressEntity, MenuEntity, RestaurantEntity
+from ..store.entities import AddressEntity, MenuEntity, RestaurantEntity, TableEntity
 from ..store.menu_repository import MenuRepository
 from ..store.restaurant_repository import RestaurantRepository
+from ..store.table_repository import TableRepository
 from .models import AddressModel, MenuModel, RestaurantModel, TableModel, WeekDay
 
 
@@ -50,37 +51,6 @@ def _mapDayToEnum(openDays: str) -> List[WeekDay]:
 # https://python-dependency-injector.ets-labs.org/examples/fastapi-sqlalchemy.html
 
 
-# TODO: see if the pydantic approach simplifies mapping
-# for business logic validation of data pydantic would be nice any-way
-# from pydantic import BaseModel
-
-# class AddressEntity(BaseModel):
-#     street: str
-#     city: str
-
-# class UserEntity(BaseModel):
-#     id: int
-#     name: str
-#     email: str
-#     address: AddressEntity
-
-# class AddressDTO(BaseModel):
-#     street: str
-#     city: str
-
-# class UserDTO(BaseModel):
-#     id: int
-#     name: str
-#     address: AddressDTO
-
-# def map_user_entity_to_dto(user_entity: UserEntity) -> UserDTO:
-#     return UserDTO(**user_entity.dict())
-
-# address_entity = AddressEntity(street="123 Main St", city="Anytown")
-# user_entity = UserEntity(id=1, name="John Doe", email="john@example.com", address=address_entity)
-# user_dto = map_user_entity_to_dto(user_entity)
-
-
 def _mapEntityToModel(res: RestaurantEntity) -> RestaurantModel:
     open_days = _mapDayToEnum(res.open_days)
 
@@ -92,7 +62,12 @@ def _mapEntityToModel(res: RestaurantEntity) -> RestaurantModel:
 
     restaurant_model = RestaurantModel(
         id=res.id,
-        address=None,
+        address=AddressModel(
+            street=res.address.street,
+            zip=res.address.zip,
+            city=res.address.city,
+            countryCode=res.address.country,
+        ),
         menus=None,
         tables=None,
         name=res.name,
@@ -100,15 +75,6 @@ def _mapEntityToModel(res: RestaurantEntity) -> RestaurantModel:
         openUntil=_mapTimeToHours(res.open_until),
         openDays=open_days,
     )
-
-    # map to AddressModel
-    address = AddressModel(
-        street=res.address.street,
-        zip=res.address.zip,
-        city=res.address.city,
-        countryCode=res.address.country,
-    )
-    restaurant_model.address = address
 
     # map to MenuModel
     if res.menus is not None:
@@ -149,6 +115,7 @@ class RestaurantService:
         def work_in_transaction(session) -> List[RestaurantModel]:
             res_repo = RestaurantRepository.create_with_session(session)
             menu_repo = MenuRepository.create_with_session(session)
+            table_repo = TableRepository.create_with_session(session)
 
             # lookup the address first
             a = restaurant.address
@@ -196,6 +163,11 @@ class RestaurantService:
                     menu_repo.save(
                         MenuEntity(name=menu.name, price=menu.price, category=menu.category, restaurant=saved)
                     )
+
+            # process the tables
+            if restaurant.tables is not None:
+                for table in restaurant.tables:
+                    table_repo.save(TableEntity(table_number=table.number, seats=table.places, restaurant=saved))
 
             result: List[RestaurantModel] = []
             result.append(_mapEntityToModel(saved))

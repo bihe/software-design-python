@@ -32,7 +32,6 @@ def test_menu_repository_crud():
         return result
 
     repo = MenuRepository(get_database().managed_session)
-    _ = repo.unit_of_work(action)
-
-    # menus = repo.get_menu_list(result[0])
-    # assert len(menus) == 1
+    result = repo.unit_of_work(action)
+    menus = repo.get_menu_list(result[0])
+    assert len(menus) == 1

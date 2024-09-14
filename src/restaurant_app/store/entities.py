@@ -54,8 +54,12 @@ class RestaurantEntity(BaseEntity):
     # objects are accessed outstide of a SqlAlchemy Session
     # @see https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html
     address: Mapped["AddressEntity"] = relationship(back_populates="restaurants", lazy="joined")
-    menus: Mapped[List["MenuEntity"]] = relationship(back_populates="restaurant", lazy="joined")
-    tables: Mapped[List["TableEntity"]] = relationship(back_populates="restaurant", lazy="joined")
+    menus: Mapped[List["MenuEntity"]] = relationship(
+        back_populates="restaurant", lazy="joined", cascade="all, delete-orphan"
+    )
+    tables: Mapped[List["TableEntity"]] = relationship(
+        back_populates="restaurant", lazy="joined", cascade="all, delete-orphan"
+    )
 
 
 @dataclass
@@ -79,7 +83,7 @@ class MenuEntity(BaseEntity):
     category: Mapped[str] = mapped_column("category", String(255))
 
     retaurant_id: Mapped[int] = mapped_column(ForeignKey("RESTAURANT.id"))
-    restaurant: Mapped["RestaurantEntity"] = relationship(back_populates="menus")
+    restaurant: Mapped["RestaurantEntity"] = relationship()
 
     orders: Mapped[List["OrderEntity"]] = relationship(secondary=relation_menu_order, back_populates="menus")
 
