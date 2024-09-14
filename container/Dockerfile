@@ -33,6 +33,7 @@ COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/pytho
 # we need mariadb library (very, very similar to mysql) to access the db
 # this is the runtime library dependency of mysqlclient
 RUN apt-get update && apt-get install -y libmariadb3
+RUN pip install gunicorn
 
 # it is a best practise to create a seperate user and not execute everything with root
 RUN useradd -d /opt/restaurant_app restaurant-app-user
@@ -49,4 +50,5 @@ EXPOSE 9000
 ENV FLASK_RUN_HOST 0.0.0.0
 ENV FLASK_RUN_PORT 9000
 
-CMD ["python","run.py"]
+#CMD ["python","run.py"]
+CMD ["gunicorn","-w", "4", "-b", "0.0.0.0:9000", "restaurant_app:create_app()"]
