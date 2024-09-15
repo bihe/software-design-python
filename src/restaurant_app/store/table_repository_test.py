@@ -25,10 +25,26 @@ def test_table_repository_crud():
 
     repo = TableRepository(get_database().managed_session)
     result = repo.unit_of_work(action)
-    tables = repo.get_tables_for_restaurant(result[0])
+    restaurant_id = result[0]
+    tables = repo.get_tables_for_restaurant(restaurant_id)
     assert len(tables) == 2
     assert tables[0].table_number == "Table1" and tables[0].seats == 4
     assert tables[1].table_number == "Table2" and tables[1].seats == 6
 
     table1 = repo.get_table_by_id(tables[0].id)
     assert table1.table_number == "Table1" and table1.seats == 4
+
+    tables_with_capacity = repo.get_tables_with_capacity(3, restaurant_id)
+    assert len(tables_with_capacity) == 2
+
+    tables_with_capacity = repo.get_tables_with_capacity(4, restaurant_id)
+    assert len(tables_with_capacity) == 2
+
+    tables_with_capacity = repo.get_tables_with_capacity(5, restaurant_id)
+    assert len(tables_with_capacity) == 1
+
+    tables_with_capacity = repo.get_tables_with_capacity(6, restaurant_id)
+    assert len(tables_with_capacity) == 1
+
+    tables_with_capacity = repo.get_tables_with_capacity(7, restaurant_id)
+    assert len(tables_with_capacity) == 0

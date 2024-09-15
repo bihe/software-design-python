@@ -114,7 +114,7 @@ class ReservationEntity(BaseEntity):
     time_until: Mapped[datetime.time] = mapped_column("time_until")
     people: Mapped[int] = mapped_column("people")
     reservation_name: Mapped[str] = mapped_column("reservation_name", String(255))
-    reservation_number: Mapped[str] = mapped_column("reservation_number", String(10))
+    reservation_number: Mapped[str] = mapped_column("reservation_number", String(10), unique=True)
 
     tables: Mapped[List["TableEntity"]] = relationship(
         secondary=relation_table_reservation, back_populates="reservations"

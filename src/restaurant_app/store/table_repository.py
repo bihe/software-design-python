@@ -25,6 +25,20 @@ class TableRepository(BaseRepository):
         with self.get_session() as session:
             return session.query(TableEntity).filter(TableEntity.retaurant_id == restaurant_id).all()
 
+    def get_tables_with_capacity(self, capacity: int, restaurant_id: int) -> List[TableEntity]:
+        if capacity <= 0:
+            return []
+        with self.get_session() as session:
+            tables = (
+                session.query(TableEntity)
+                .filter(TableEntity.retaurant_id == restaurant_id)
+                .filter(TableEntity.seats >= capacity)
+                .all()
+            )
+            if tables is None:
+                tables = []
+            return tables
+
     def save(self, table: TableEntity) -> TableEntity:
         with self.get_session() as session:
             table_id = table.id or 0
