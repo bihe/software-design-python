@@ -55,7 +55,7 @@ class MenuRepository(BaseRepository):
             menu = (
                 session.query(MenuEntity)
                 .filter(MenuEntity.name == name)
-                .filter(MenuEntity.retaurant_id == res_id)
+                .filter(MenuEntity.restaurant_id == res_id)
                 .first()
             )
         return menu
@@ -65,7 +65,7 @@ class MenuRepository(BaseRepository):
         with self.get_session() as session:
             menus = (
                 session.query(MenuEntity)
-                .filter(MenuEntity.retaurant_id == res_id)
+                .filter(MenuEntity.restaurant_id == res_id)
                 .order_by(MenuEntity.category, MenuEntity.name)
                 .all()
             )

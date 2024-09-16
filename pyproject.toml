@@ -39,5 +39,5 @@ Repository = "https://its-git.fh-salzburg.ac.at/hbinggl/software-design-python"
 [tool.coverage.run]
 source = ["restaurant_app"]
 
-[tool.pytest.ini_options]
-addopts = "--cov --cov-report=lcov:lcov.info --cov-report=term"
+#[tool.pytest.ini_options]
+#addopts = "--cov --cov-report=lcov:lcov.info --cov-report=term"

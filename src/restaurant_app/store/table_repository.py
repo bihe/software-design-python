@@ -23,7 +23,7 @@ class TableRepository(BaseRepository):
 
     def get_tables_for_restaurant(self, restaurant_id: int) -> List[TableEntity]:
         with self.get_session() as session:
-            return session.query(TableEntity).filter(TableEntity.retaurant_id == restaurant_id).all()
+            return session.query(TableEntity).filter(TableEntity.restaurant_id == restaurant_id).all()
 
     def get_tables_with_capacity(self, capacity: int, restaurant_id: int) -> List[TableEntity]:
         if capacity <= 0:
@@ -31,7 +31,7 @@ class TableRepository(BaseRepository):
         with self.get_session() as session:
             tables = (
                 session.query(TableEntity)
-                .filter(TableEntity.retaurant_id == restaurant_id)
+                .filter(TableEntity.restaurant_id == restaurant_id)
                 .filter(TableEntity.seats >= capacity)
                 .all()
             )
@@ -55,7 +55,7 @@ class TableRepository(BaseRepository):
                 existing = (
                     session.query(TableEntity)
                     .filter(TableEntity.table_number == table.table_number)
-                    .filter(TableEntity.retaurant_id == table.restaurant.id)
+                    .filter(TableEntity.restaurant_id == table.restaurant.id)
                     .first()
                 )
                 if existing is not None:

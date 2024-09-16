@@ -82,7 +82,7 @@ class MenuEntity(BaseEntity):
     price: Mapped[float] = mapped_column("price")
     category: Mapped[str] = mapped_column("category", String(255))
 
-    retaurant_id: Mapped[int] = mapped_column(ForeignKey("RESTAURANT.id"))
+    restaurant_id: Mapped[int] = mapped_column(ForeignKey("RESTAURANT.id"))
     restaurant: Mapped["RestaurantEntity"] = relationship()
 
     orders: Mapped[List["OrderEntity"]] = relationship(secondary=relation_menu_order, back_populates="menus")
@@ -95,7 +95,7 @@ class TableEntity(BaseEntity):
     table_number: Mapped[str] = mapped_column("table_number", String(255))
     seats: Mapped[int] = mapped_column("seats")
 
-    retaurant_id: Mapped[int] = mapped_column(ForeignKey("RESTAURANT.id"))
+    restaurant_id: Mapped[int] = mapped_column(ForeignKey("RESTAURANT.id"))
     restaurant: Mapped[RestaurantEntity] = relationship(back_populates="tables")
 
     reservations: Mapped[List["ReservationEntity"]] = relationship(

@@ -1,11 +1,12 @@
 import datetime
 from contextlib import AbstractContextManager
-from typing import Callable, Self
+from typing import Callable, List, Self
 
-from sqlalchemy.orm import Session
+from sqlalchemy import extract
+from sqlalchemy.orm import Session, aliased
 
 from .base_repository import BaseRepository
-from .entities import ReservationEntity
+from .entities import ReservationEntity, TableEntity
 
 
 class ReservationRepository(BaseRepository):
@@ -72,3 +73,22 @@ class ReservationRepository(BaseRepository):
             ):
                 return False
             return True
+
+    def get_table_reservations_for_date(self, date: datetime.date, table_id: int) -> List[ReservationEntity]:
+        """determine if there is a reservatiion for the given date/time and the table"""
+        with self.get_session() as session:
+            table_alias = aliased(TableEntity)
+
+            reservations = (
+                session.query(ReservationEntity)
+                .join(table_alias, ReservationEntity.tables)
+                .where(table_alias.id == table_id)
+                .where(
+                    # https://github.com/sqlalchemy/sqlalchemy/discussions/8067
+                    (extract("year", ReservationEntity.reservation_date) == date.year)
+                    & (extract("month", ReservationEntity.reservation_date) == date.month)
+                    & (extract("day", ReservationEntity.reservation_date) == date.day)
+                )
+                .order_by(ReservationEntity.time_from.asc())
+            ).all()
+            return reservations

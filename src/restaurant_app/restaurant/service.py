@@ -65,6 +65,8 @@ class RestaurantService:
     def save(self, restaurant: RestaurantModel) -> RestaurantModel:
 
         def work_in_transaction(session) -> List[RestaurantModel]:
+            # TODO: change the static methods to instance methods
+            # so that the repository created is defined by the injected repo!!!
             res_repo = RestaurantRepository.create_with_session(session)
             menu_repo = MenuRepository.create_with_session(session)
             table_repo = TableRepository.create_with_session(session)

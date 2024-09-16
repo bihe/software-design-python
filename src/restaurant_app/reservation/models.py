@@ -1,5 +1,5 @@
+import datetime
 from dataclasses import dataclass
-from datetime import datetime, time
 
 from ..restaurant.models import TableModel
 
@@ -9,9 +9,9 @@ class ReservationRequestModel:
     restaurant_id: int
     name: str
     num_people: int
-    time_from: time.Time
-    time_until: time.Time
-    reservation_date: datetime.Date
+    time_from: datetime.time
+    time_until: datetime.time
+    reservation_date: datetime.date
 
 
 @dataclass
@@ -20,7 +20,7 @@ class ReservationModel:
     number: str
     name: str
     num_people: int
-    time_from: time.Time
-    time_until: time.Time
-    reservation_date: datetime.Date
+    time_from: datetime.time
+    time_until: datetime.time
+    reservation_date: datetime.date
     reserved_table: TableModel

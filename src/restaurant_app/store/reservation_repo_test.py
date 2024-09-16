@@ -1,9 +1,11 @@
 import datetime
 from typing import Any, List
 
-from .entities import ReservationEntity
-from .repository_test_helpers import get_database
+from .entities import ReservationEntity, TableEntity
+from .repository_test_helpers import create_restaurant_data, get_database
 from .reservation_repo import ReservationRepository
+from .restaurant_repository import RestaurantRepository
+from .table_repository import TableRepository
 
 
 def test_reservation_repository_crud():
@@ -54,3 +56,81 @@ def test_reservation_repository_crud():
 
     assert repo.is_reservation_number_in_use("1234")
     assert not repo.is_reservation_number_in_use("2345")
+
+
+def test_reservations_for_date_time():
+
+    def action(session) -> List[Any]:
+        reservation_repo = ReservationRepository.create_with_session(session)
+        table_repo = TableRepository.create_with_session(session)
+        res_repo = RestaurantRepository.create_with_session(session)
+        table_repo = TableRepository.create_with_session(session)
+
+        res = create_restaurant_data()
+        res = res_repo.save(res)
+        res_repo.sync()
+
+        table = table_repo.save(TableEntity(table_number="Table1", seats=4, restaurant=res))
+        table_repo.sync()
+
+        date = datetime.date(2024, 9, 10)
+
+        res = ReservationEntity(
+            reservation_date=date,
+            time_from=datetime.time(20, 0, 0),
+            time_until=datetime.time(22, 0, 0),
+            people=4,
+            reservation_name="Test1",
+            reservation_number="1234",
+        )
+        res.tables.append(table)
+        res = reservation_repo.save(res)
+
+        res = ReservationEntity(
+            reservation_date=date,
+            time_from=datetime.time(18, 0, 0),
+            time_until=datetime.time(19, 0, 0),
+            people=4,
+            reservation_name="Test2",
+            reservation_number="5678",
+        )
+        res.tables.append(table)
+        res = reservation_repo.save(res)
+
+        res = ReservationEntity(
+            reservation_date=date,
+            time_from=datetime.time(22, 0, 0),
+            time_until=datetime.time(23, 0, 0),
+            people=4,
+            reservation_name="Test3",
+            reservation_number="9876",
+        )
+        res.tables.append(table)
+        res = reservation_repo.save(res)
+
+        reservation_repo.sync()
+
+        print(res)
+
+        result = []
+        result.append(table.id)
+        return result
+
+    repo = ReservationRepository(get_database().managed_session)
+    result = repo.unit_of_work(action)
+    table_id = result[0]
+    assert table_id > 0
+
+    # find me the reservations
+    reservations = repo.get_table_reservations_for_date(datetime.date(2024, 9, 10), table_id)
+    assert len(reservations) == 3
+    assert reservations[0].time_from == datetime.time(18, 0, 0)
+    assert reservations[2].time_from == datetime.time(22, 0, 0)
+
+    # different date does not provide reservation
+    reservations = repo.get_table_reservations_for_date(datetime.date(2024, 9, 11), table_id)
+    assert len(reservations) == 0
+
+    # undefined table resulsts in no reservations
+    reservations = repo.get_table_reservations_for_date(datetime.date(2024, 9, 10), -1)
+    assert len(reservations) == 0
