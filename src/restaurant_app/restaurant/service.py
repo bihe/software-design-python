@@ -20,15 +20,17 @@ class NotFoundError(Exception):
 
 
 class RestaurantService:
-    def __init__(self, repo: RestaurantRepository):
-        self._repo = repo
+    def __init__(self, restaurant_repo: RestaurantRepository, menu_repo: MenuRepository, table_repo: TableRepository):
+        self._restaurant_repo = restaurant_repo
+        self._menu_repo = menu_repo
+        self._table_repo = table_repo
 
     def __str__(self) -> str:
         return "RestaurantService"
 
     def get_all(self) -> List[RestaurantModel]:
         restaurants: List[RestaurantModel] = []
-        res = self._repo.get_all_restaurants()
+        res = self._restaurant_repo.get_all_restaurants()
         if res is not None:
             for r in res:
                 restaurants.append(mapEntityToModel(r))
@@ -37,7 +39,7 @@ class RestaurantService:
     def is_restaurant_open(
         self, restaurant_id: int, date: datetime.date, time_from: datetime.time, time_until: datetime.time
     ) -> bool:
-        restaurant = self._repo.get_restaurant_by_id(restaurant_id)
+        restaurant = self._restaurant_repo.get_restaurant_by_id(restaurant_id)
         if restaurant is None:
             raise NotFoundError(f"a restaurant with id '{restaurant.id}' is not available")
 
@@ -65,11 +67,9 @@ class RestaurantService:
     def save(self, restaurant: RestaurantModel) -> RestaurantModel:
 
         def work_in_transaction(session) -> List[RestaurantModel]:
-            # TODO: change the static methods to instance methods
-            # so that the repository created is defined by the injected repo!!!
-            res_repo = RestaurantRepository.create_with_session(session)
-            menu_repo = MenuRepository.create_with_session(session)
-            table_repo = TableRepository.create_with_session(session)
+            res_repo = self._restaurant_repo.new_session(session)
+            menu_repo = self._menu_repo.new_session(session)
+            table_repo = self._table_repo.new_session(session)
 
             # lookup the address first
             a = restaurant.address
@@ -127,7 +127,7 @@ class RestaurantService:
             result.append(mapEntityToModel(saved))
             return result
 
-        result = self._repo.unit_of_work(work_in_transaction)
+        result = self._restaurant_repo.unit_of_work(work_in_transaction)
         if result is None or len(result) == 0:
             return None
         return result[0]

@@ -7,10 +7,13 @@ from .restaurant_repository import RestaurantRepository
 
 
 def test_menu_repository_crud():
+    managed_session = get_database().managed_session
+    repo = MenuRepository(managed_session)
+    repo_restaurant = RestaurantRepository(managed_session)
 
     def action(session) -> List[Any]:
-        res_repo = RestaurantRepository.create_with_session(session)
-        menu_repo = MenuRepository.create_with_session(session)
+        res_repo = repo_restaurant.new_session(session)
+        menu_repo = repo.new_session(session)
 
         res = create_restaurant_data()
         res = res_repo.save(res)
@@ -31,7 +34,6 @@ def test_menu_repository_crud():
         result.append(res.id)
         return result
 
-    repo = MenuRepository(get_database().managed_session)
     result = repo.unit_of_work(action)
     menus = repo.get_menu_list(result[0])
     assert len(menus) == 1

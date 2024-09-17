@@ -10,8 +10,10 @@ from .table_repository import TableRepository
 
 def test_reservation_repository_crud():
 
+    repo = ReservationRepository(get_database().managed_session)
+
     def action(session) -> List[Any]:
-        reservation_repo = ReservationRepository.create_with_session(session)
+        reservation_repo = repo.new_session(session)
         res = reservation_repo.save(
             ReservationEntity(
                 reservation_date=datetime.datetime.now(),
@@ -41,7 +43,6 @@ def test_reservation_repository_crud():
         result.append(update.id)
         return result
 
-    repo = ReservationRepository(get_database().managed_session)
     res_id = repo.unit_of_work(action)
     print(res_id)
     find = repo.get_reservation_by_id(res_id)
@@ -59,12 +60,15 @@ def test_reservation_repository_crud():
 
 
 def test_reservations_for_date_time():
+    managed_session = get_database().managed_session
+    repo = ReservationRepository(managed_session)
+    repo_restaurant = RestaurantRepository(managed_session)
+    repo_table = TableRepository(managed_session)
 
     def action(session) -> List[Any]:
-        reservation_repo = ReservationRepository.create_with_session(session)
-        table_repo = TableRepository.create_with_session(session)
-        res_repo = RestaurantRepository.create_with_session(session)
-        table_repo = TableRepository.create_with_session(session)
+        reservation_repo = repo.new_session(session)
+        res_repo = repo_restaurant.new_session(session)
+        table_repo = repo_table.new_session(session)
 
         res = create_restaurant_data()
         res = res_repo.save(res)
@@ -116,7 +120,6 @@ def test_reservations_for_date_time():
         result.append(table.id)
         return result
 
-    repo = ReservationRepository(get_database().managed_session)
     result = repo.unit_of_work(action)
     table_id = result[0]
     assert table_id > 0

@@ -13,7 +13,9 @@ from ..infrastructure.config import Config
 from ..restaurant.models import AddressModel, MenuModel, RestaurantModel, TableModel, WeekDay
 from ..restaurant.service import RestaurantService
 from ..store.database import SqlAlchemyDatbase
+from ..store.menu_repository import MenuRepository
 from ..store.restaurant_repository import RestaurantRepository
+from ..store.table_repository import TableRepository
 
 db_cli = AppGroup("db", short_help="Commands to work with the database")
 
@@ -120,6 +122,11 @@ def import_from_json(filename: str):
     restaurant_model.tables = tables
 
     db = SqlAlchemyDatbase(db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
-    repo = RestaurantRepository(db.managed_session)
-    svc: RestaurantService = RestaurantService(repo)
+    managed_session = db.managed_session
+
+    svc: RestaurantService = RestaurantService(
+        restaurant_repo=RestaurantRepository(managed_session),
+        menu_repo=MenuRepository(managed_session),
+        table_repo=TableRepository(managed_session),
+    )
     svc.save(restaurant_model)

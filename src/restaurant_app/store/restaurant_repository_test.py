@@ -4,10 +4,13 @@ from .restaurant_repository import RestaurantRepository
 
 def test_restaurant_repository_crud():
 
+    managed_session = get_database().managed_session
+    restaurant_repo = RestaurantRepository(managed_session)
+
     def action(session):
         res = create_restaurant_data()
         addr = res.address
-        repo = RestaurantRepository.create_with_session(session)
+        repo = restaurant_repo.new_session(session)
         saved = repo.save(res)
         repo.sync()
 
@@ -40,9 +43,7 @@ def test_restaurant_repository_crud():
         assert addr.zip == addr_lookup.zip
         assert addr.country == addr_lookup.country
 
-    db = get_database()
-    repo = RestaurantRepository(db.managed_session)
-    repo.unit_of_work(action)
+    restaurant_repo.unit_of_work(action)
 
-    all_restaurants = repo.get_all_restaurants()
+    all_restaurants = restaurant_repo.get_all_restaurants()
     assert len(all_restaurants) == 1

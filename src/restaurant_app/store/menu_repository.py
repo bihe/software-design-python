@@ -13,8 +13,7 @@ class MenuRepository(BaseRepository):
     def __init__(self, session_factory: Callable[..., AbstractContextManager[Session]], session: Session = None):
         super().__init__(session_factory=session_factory, session=session)
 
-    @classmethod
-    def create_with_session(cls, session: Session) -> Self:
+    def new_session(self, session: Session) -> Self:
         return MenuRepository(session_factory=None, session=session)
 
     def save(self, menu: MenuEntity) -> MenuEntity:

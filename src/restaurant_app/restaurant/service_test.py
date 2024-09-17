@@ -1,16 +1,20 @@
 import datetime
 from unittest import mock
 
+from ..store.menu_repository import MenuRepository
 from ..store.repository_test_helpers import create_restaurant_data
 from ..store.restaurant_repository import RestaurantRepository
+from ..store.table_repository import TableRepository
 from .service import RestaurantService
 
 
 def test_restaurant_open():
     restaurant_repo_mock = mock.Mock(spec=RestaurantRepository)
     restaurant_repo_mock.get_restaurant_by_id.return_value = create_restaurant_data()
+    menu_repo_mock = mock.Mock(spec=MenuRepository)
+    table_repo_mock = mock.Mock(spec=TableRepository)
 
-    svc = RestaurantService(restaurant_repo_mock)
+    svc = RestaurantService(restaurant_repo_mock, menu_repo_mock, table_repo_mock)
     # the date 2024-09-16 is a Monday
     assert svc.is_restaurant_open(1, datetime.date(2024, 9, 16), datetime.time(12, 0, 0), datetime.time(14, 0, 0))
     # too early

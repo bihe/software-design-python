@@ -13,8 +13,7 @@ class RestaurantRepository(BaseRepository):
     def __init__(self, session_factory: Callable[..., AbstractContextManager[Session]], session: Session = None):
         super().__init__(session_factory=session_factory, session=session)
 
-    @classmethod
-    def create_with_session(cls, session: Session) -> Self:
+    def new_session(self, session: Session) -> Self:
         return RestaurantRepository(session_factory=None, session=session)
 
     def get_restaurant_by_id(self, id: int) -> RestaurantEntity:

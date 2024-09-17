@@ -7,10 +7,13 @@ from .table_repository import TableRepository
 
 
 def test_table_repository_crud():
+    managed_session = get_database().managed_session
+    repo = TableRepository(managed_session)
+    restaurant_repo = RestaurantRepository(managed_session)
 
     def action(session) -> List[Any]:
-        res_repo = RestaurantRepository.create_with_session(session)
-        table_repo = TableRepository.create_with_session(session)
+        res_repo = restaurant_repo.new_session(session)
+        table_repo = repo.new_session(session)
 
         res = create_restaurant_data()
         res = res_repo.save(res)
@@ -23,7 +26,6 @@ def test_table_repository_crud():
         result.append(res.id)
         return result
 
-    repo = TableRepository(get_database().managed_session)
     result = repo.unit_of_work(action)
     restaurant_id = result[0]
     tables = repo.get_tables_for_restaurant(restaurant_id)

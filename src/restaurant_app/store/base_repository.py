@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from contextlib import AbstractContextManager
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Self
 
 from sqlalchemy.orm import Session
 
@@ -36,7 +36,7 @@ class BaseRepository(ABC):
         """
         self._session_factory = session_factory
         self._session = None
-        # a provided session typically is provided if we run in a transaction
+        # a provided session is used if we run in a transaction
         # we still need to do some work to make it behave in a correct way
         if session is not None:
             # we wrap the provided session into a context-manager
@@ -64,7 +64,7 @@ class BaseRepository(ABC):
         with self.get_session() as session:
             session.flush()
 
-    @classmethod
     @abstractmethod
-    def create_with_session(cls):
+    def new_session(self, session: Session) -> Self:
+        """create a new repository with a given session"""
         pass
