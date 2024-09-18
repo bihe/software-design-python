@@ -2,12 +2,14 @@ import datetime
 from typing import List
 from unittest import mock
 
+import pytest
+
 from ..restaurant.service import RestaurantService
 from ..store.entities import ReservationEntity, TableEntity
 from ..store.reservation_repo import ReservationRepository
 from ..store.table_repository import TableRepository
 from .models import ReservationRequestModel
-from .service import ReservationService
+from .service import ReservationError, ReservationService
 
 
 def test_reservation_table():
@@ -26,7 +28,7 @@ def test_reservation_table():
             ),
             ReservationEntity(
                 reservation_date=datetime.date(2024, 9, 16),
-                time_from=datetime.time(20, 30, 0),
+                time_from=datetime.time(20, 00, 0),
                 time_until=datetime.time(22, 0, 0),
                 people=3,
                 reservation_name="Test2",
@@ -65,13 +67,14 @@ def test_reservation_table():
             restaurant_svc=restaurant_svc_mock, reservation_repo=reservation_repo, table_repo=table_repo_mock
         )
 
+        # a slot before the 20:00-22:00 reservation
         reservation = reservation_svc.reserve(
             ReservationRequestModel(
                 restaurant_id=1,
                 name="Test",
                 num_people=4,
                 time_from=datetime.time(19, 0, 0),
-                time_until=datetime.time(20, 30, 0),
+                time_until=datetime.time(20, 00, 0),
                 reservation_date=datetime.date(2024, 9, 16),
             )
         )
@@ -83,3 +86,84 @@ def test_reservation_table():
         assert reservation.reserved_table.id == 1
         assert reservation.reserved_table.number == "1"
         assert reservation.reserved_table.places >= 4
+
+        # a slot after the 20:00-22:00 reservation
+        reservation = reservation_svc.reserve(
+            ReservationRequestModel(
+                restaurant_id=1,
+                name="Test",
+                num_people=4,
+                time_from=datetime.time(22, 0, 0),
+                time_until=datetime.time(23, 00, 0),
+                reservation_date=datetime.date(2024, 9, 16),
+            )
+        )
+
+        assert reservation.id > 0
+        assert reservation.number != ""  # as this number is random, we cannot compare it to a real value
+        assert len(reservation.number) == 7  # but we know the lenght
+        assert reservation.reserved_table is not None  # we got a table
+        assert reservation.reserved_table.id == 1
+        assert reservation.reserved_table.number == "1"
+        assert reservation.reserved_table.places >= 4
+
+        # if there is no table available, we get an error
+        with pytest.raises(ReservationError):
+            reservation_svc.reserve(
+                ReservationRequestModel(
+                    restaurant_id=1,
+                    name="Test",
+                    num_people=4,
+                    time_from=datetime.time(20, 0, 0),  # the request overlaps with an existing reservation
+                    time_until=datetime.time(22, 0, 0),
+                    reservation_date=datetime.date(2024, 9, 16),
+                )
+            )
+
+        with pytest.raises(ReservationError):
+            reservation_svc.reserve(
+                ReservationRequestModel(
+                    restaurant_id=1,
+                    name="Test",
+                    num_people=4,
+                    time_from=datetime.time(20, 0, 0),  # the request overlaps with an existing reservation
+                    time_until=datetime.time(21, 0, 0),
+                    reservation_date=datetime.date(2024, 9, 16),
+                )
+            )
+
+        with pytest.raises(ReservationError):
+            reservation_svc.reserve(
+                ReservationRequestModel(
+                    restaurant_id=1,
+                    name="Test",
+                    num_people=4,
+                    time_from=datetime.time(21, 0, 0),  # the request overlaps with an existing reservation
+                    time_until=datetime.time(22, 0, 0),
+                    reservation_date=datetime.date(2024, 9, 16),
+                )
+            )
+
+        with pytest.raises(ReservationError):
+            reservation_svc.reserve(
+                ReservationRequestModel(
+                    restaurant_id=1,
+                    name="Test",
+                    num_people=4,
+                    time_from=datetime.time(19, 0, 0),  # the request overlaps with an existing reservation
+                    time_until=datetime.time(21, 0, 0),
+                    reservation_date=datetime.date(2024, 9, 16),
+                )
+            )
+
+        with pytest.raises(ReservationError):
+            reservation_svc.reserve(
+                ReservationRequestModel(
+                    restaurant_id=1,
+                    name="Test",
+                    num_people=4,
+                    time_from=datetime.time(21, 0, 0),  # the request overlaps with an existing reservation
+                    time_until=datetime.time(23, 0, 0),
+                    reservation_date=datetime.date(2024, 9, 16),
+                )
+            )

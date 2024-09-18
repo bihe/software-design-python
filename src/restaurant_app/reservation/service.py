@@ -99,30 +99,30 @@ class ReservationService:
                     if request.time_from >= reservation.time_from and request.time_until <= reservation.time_until:
                         # set any found table to None, because we need to process all reservations
                         table_to_reserve = None
-                        continue
+                        break
 
                     # 2) check if we have an overlap
                     # either the until_date is within an existing reservation
                     # above: if the request is from 19:00 to 21:00
                     #           and overlaps with 20:00-22:00
                     if (
-                        request.time_from < reservation.time_from
+                        request.time_from <= reservation.time_from
                         and request.time_until > reservation.time_from
                         and request.time_until < reservation.time_until
                     ):
                         table_to_reserve = None
-                        continue
+                        break
 
                     # or the from_date is within one
                     # above: if the request is from 21:00 to 23:00
                     #           and overlaps with 20:00-22:00
                     if (
-                        request.time_from > reservation.time_from
+                        request.time_from >= reservation.time_from
                         and request.time_from < reservation.time_until
                         and request.time_until > reservation.time_until
                     ):
                         table_to_reserve = None
-                        continue
+                        break
 
                     # if we came this far - we got us a table
                     # but it might be, that the table is set to None for the next loop iteration
