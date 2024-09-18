@@ -1,4 +1,3 @@
-import datetime
 from contextlib import AbstractContextManager
 from typing import Callable, List, Self
 
@@ -64,7 +63,7 @@ class RestaurantRepository(BaseRepository):
                     existing.open_from = restaurant.open_from
                     existing.open_until = restaurant.open_until
                     existing.open_days = restaurant.open_days
-                    existing.modified = datetime.datetime.now(datetime.UTC)
+                    # existing.modified = datetime.datetime.now(datetime.UTC)
                     existing.address = self._handle_address(restaurant.address, session)
                     session.add(existing)
                     return existing

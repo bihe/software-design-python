@@ -29,7 +29,6 @@ class ReservationRepository(BaseRepository):
                     existing.people = reservation.people
                     existing.time_from = reservation.time_from
                     existing.time_until = reservation.time_until
-                    existing.modified = datetime.datetime.now(datetime.UTC)
                     session.add(existing)
                     return existing
             else:
@@ -45,7 +44,6 @@ class ReservationRepository(BaseRepository):
                     existing.people = reservation.people
                     existing.time_from = reservation.time_from
                     existing.time_until = reservation.time_until
-                    existing.modified = datetime.datetime.now(datetime.UTC)
                     session.add(existing)
                     return existing
 

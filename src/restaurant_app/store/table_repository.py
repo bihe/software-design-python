@@ -1,4 +1,3 @@
-import datetime
 from contextlib import AbstractContextManager
 from typing import Callable, List, Self
 
@@ -45,7 +44,6 @@ class TableRepository(BaseRepository):
                 existing = session.get(TableEntity, table_id)
                 if existing is not None:
                     existing.table_number = table.table_number
-                    existing.modified = datetime.datetime.now(datetime.UTC)
                     existing.retaurant = table.restaurant
                     session.add(existing)
                     return existing
@@ -59,7 +57,6 @@ class TableRepository(BaseRepository):
                 )
                 if existing is not None:
                     existing.table_number = table.table_number
-                    existing.modified = datetime.datetime.now(datetime.UTC)
                     session.add(existing)
                     return existing
 

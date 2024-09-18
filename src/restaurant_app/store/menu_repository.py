@@ -1,4 +1,3 @@
-import datetime
 from contextlib import AbstractContextManager
 from typing import Callable, List, Self
 
@@ -23,9 +22,7 @@ class MenuRepository(BaseRepository):
             menu_to_save = MenuEntity()
             if menu_id > 0:
                 menu_to_save = session.get(MenuEntity, id)
-                if menu_to_save is not None:
-                    menu_to_save.modified = datetime.datetime.now(datetime.UTC)
-                else:
+                if menu_to_save is None:
                     menu_to_save = MenuEntity()
             else:
                 # lookup the menu-entry by name and category
@@ -35,9 +32,7 @@ class MenuRepository(BaseRepository):
                     .filter(MenuEntity.category == menu.category)
                     .first()
                 )
-                if menu_to_save is not None:
-                    menu_to_save.modified = datetime.datetime.now(datetime.UTC)
-                else:
+                if menu_to_save is None:
                     menu_to_save = MenuEntity()
 
             menu_to_save.name = menu.name

@@ -22,6 +22,10 @@ relation_table_reservation = Table(
 )
 
 
+def current_datetime() -> datetime.datetime:
+    return datetime.datetime.now(datetime.UTC)
+
+
 class BaseEntity(Base):
     """abstract base-class defining common columns for all entities"""
 
@@ -31,10 +35,8 @@ class BaseEntity(Base):
     id: Mapped[int] = mapped_column(
         primary_key=True, autoincrement=True, index=True, nullable=False, unique=True, sort_order=-1
     )
-    created: Mapped[datetime.datetime] = mapped_column(
-        nullable=False, default=datetime.datetime.now(datetime.timezone.utc)
-    )
-    modified: Mapped[datetime.datetime] = mapped_column(nullable=True, default=None, onupdate=datetime.datetime.now)
+    created: Mapped[datetime.datetime] = mapped_column(nullable=False, default=current_datetime)
+    modified: Mapped[datetime.datetime] = mapped_column(nullable=True, onupdate=current_datetime)
 
 
 @dataclass

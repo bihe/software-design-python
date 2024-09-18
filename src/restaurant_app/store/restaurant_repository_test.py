@@ -19,13 +19,16 @@ def test_restaurant_repository_crud():
 
         find_restaurant = repo.get_restaurant_by_id(saved.id)
         assert find_restaurant.name == res.name
+        assert find_restaurant.modified is None
 
         # update the name of the restaurant
         find_restaurant.name += " updated"
         repo.save(find_restaurant)
+        repo.sync()
 
         updated_restaurant = repo.get_restaurant_by_id(find_restaurant.id)
         assert "Test-Restaurant updated" == updated_restaurant.name
+        assert find_restaurant.modified is not None
 
         # updat the address
         updated_restaurant.address.street += " updated"
