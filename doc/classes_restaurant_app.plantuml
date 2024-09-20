@@ -1,81 +1,181 @@
 @startuml classes_restaurant_app
 set namespaceSeparator none
-class "AddressModel" as restaurant_app.store.models.AddressModel {
+class "AddressEntity" as restaurant_app.store.entities.AddressEntity #BBCC33 {
   city : Mapped[str]
   country : Mapped[str]
-  id : Mapped[int]
-  restaurants : Mapped[List['RestaurantModel']]
+  restaurants : Mapped[List['RestaurantEntity']]
   street : Mapped[str]
   zip : Mapped[str]
 }
-class "BaseRepository" as restaurant_app.store.base_repository.BaseRepository {
-  {abstract}create_with_session()
-  get_session() -> Session
+class "AddressModel" as restaurant_app.restaurant.models.AddressModel #44BB99 {
+  city : str
+  countryCode : str
+  street : str
+  zip : str
+}
+class "BaseEntity" as restaurant_app.store.entities.BaseEntity #BBCC33 {
+  created : Mapped[datetime.datetime]
+  id : Mapped[int]
+  modified : Mapped[datetime.datetime]
+}
+class "BaseRepository" as restaurant_app.store.base_repository.BaseRepository #BBCC33 {
+  get_session() -> AbstractContextManager[Session]
+  {abstract}new_session(session: Session) -> Self
   sync()
-  unit_of_work(action: Callable[[Session], None])
+  unit_of_work(action: Callable[[Session], List[Any]]) -> List[Any]
 }
-class "MenuModel" as restaurant_app.store.models.MenuModel {
+class "MenuEntity" as restaurant_app.store.entities.MenuEntity #BBCC33 {
   category : Mapped[str]
-  id : Mapped[int]
   name : Mapped[str]
-  orders : Mapped[List['OrderModel']]
+  orders : Mapped[List['OrderEntity']]
   price : Mapped[float]
-  restaurant : Mapped['RestaurantModel']
-  retaurant_id : Mapped[int]
+  restaurant : Mapped['RestaurantEntity']
+  restaurant_id : Mapped[int]
 }
-class "OrderModel" as restaurant_app.store.models.OrderModel {
-  id : Mapped[int]
-  menus : Mapped[List['MenuModel']]
-  table : Mapped['TableModel']
+class "MenuModel" as restaurant_app.restaurant.models.MenuModel #44BB99 {
+  category : str
+  id : int
+  name : str
+  price : float
+}
+class "MenuRepository" as restaurant_app.store.menu_repository.MenuRepository #BBCC33 {
+  get_menu_by_name(name: str, res_id: int) -> MenuEntity
+  get_menu_list(res_id: int) -> List[MenuEntity]
+  new_session(session: Session) -> Self
+  save(menu: MenuEntity) -> MenuEntity
+}
+class "<color:red>NotFoundError</color>" as restaurant_app.restaurant.service.NotFoundError #44BB99 {
+  message
+}
+class "OrderEntity" as restaurant_app.store.entities.OrderEntity #BBCC33 {
+  menus : Mapped[List['MenuEntity']]
+  table : Mapped['TableEntity']
   table_id : Mapped[int]
   total : Mapped[float]
   waiter : Mapped[str]
 }
-class "ReservationModel" as restaurant_app.store.models.ReservationModel {
-  id : Mapped[int]
+class "ReservationEntity" as restaurant_app.store.entities.ReservationEntity #BBCC33 {
   people : Mapped[int]
   reservation_date : Mapped[datetime.datetime]
   reservation_name : Mapped[str]
   reservation_number : Mapped[str]
-  tables : Mapped[List['TableModel']]
+  tables : Mapped[List['TableEntity']]
   time_from : Mapped[datetime.time]
   time_until : Mapped[datetime.time]
 }
-class "RestaurantModel" as restaurant_app.store.models.RestaurantModel {
-  address : Mapped['AddressModel']
+class "<color:red>ReservationError</color>" as restaurant_app.reservation.service.ReservationError #99DDFF {
+  message
+}
+class "ReservationModel" as restaurant_app.reservation.models.ReservationModel #99DDFF {
+  id : int
+  name : str
+  num_people : int
+  number : str
+  reservation_date : date
+  reserved_table
+  time_from : time
+  time_until : time
+}
+class "ReservationRepository" as restaurant_app.store.reservation_repo.ReservationRepository #BBCC33 {
+  get_reservation_by_id(id: int) -> ReservationEntity
+  get_reservation_by_number(number: int) -> ReservationEntity
+  get_table_reservations_for_date(date: datetime.date, table_id: int) -> List[ReservationEntity]
+  is_reservation_number_in_use(number: str) -> bool
+  new_session(session: Session) -> Self
+  save(reservation: ReservationEntity) -> ReservationEntity
+}
+class "ReservationRequestModel" as restaurant_app.reservation.models.ReservationRequestModel #99DDFF {
+  name : str
+  num_people : int
+  reservation_date : date
+  restaurant_id : int
+  time_from : time
+  time_until : time
+}
+class "ReservationService" as restaurant_app.reservation.service.ReservationService #99DDFF {
+  reserve(request: ReservationRequestModel) -> ReservationModel
+}
+class "RestaurantEntity" as restaurant_app.store.entities.RestaurantEntity #BBCC33 {
+  address : Mapped['AddressEntity']
   address_id : Mapped[int]
-  id : Mapped[int]
-  menus : Mapped[List['MenuModel']]
+  menus : Mapped[List['MenuEntity']]
   name : Mapped[str]
   open_days : Mapped[str]
   open_from : Mapped[datetime.time]
   open_until : Mapped[datetime.time]
-  tables : Mapped[List['TableModel']]
+  tables : Mapped[List['TableEntity']]
 }
-class "RestaurantRepository" as restaurant_app.store.restaurant_repository.RestaurantRepository {
-  create_with_session(session: Session) -> Self
-  get_all_restaurants() -> List[RestaurantModel]
-  get_restaurant_by_id(id: int) -> RestaurantModel
+class "RestaurantModel" as restaurant_app.restaurant.models.RestaurantModel #44BB99 {
+  address
+  id : int
+  menus : List[MenuModel]
+  name : str
+  openDays : List[WeekDay]
+  openFrom : List[int]
+  openUntil : List[int]
+  tables : List[TableModel]
+}
+class "RestaurantRepository" as restaurant_app.store.restaurant_repository.RestaurantRepository #BBCC33 {
+  find_address(address: AddressEntity) -> AddressEntity
+  find_restaurants_by_name_and_address(name: str, addr: AddressEntity) -> RestaurantEntity
+  get_all_restaurants() -> List[RestaurantEntity]
+  get_restaurant_by_id(id: int) -> RestaurantEntity
+  new_session(session: Session) -> Self
+  save(restaurant: RestaurantEntity) -> RestaurantEntity
+}
+class "RestaurantService" as restaurant_app.restaurant.service.RestaurantService #44BB99 {
+  get_all() -> List[RestaurantModel]
+  is_restaurant_open(restaurant_id: int, date: datetime.date, time_from: datetime.time, time_until: datetime.time) -> bool
   save(restaurant: RestaurantModel) -> RestaurantModel
 }
-class "RestaurantService" as restaurant_app.restaurant.services.restaurant.RestaurantService {
-  get_service_name() -> str
+class "SessionContextManager" as restaurant_app.store.base_repository.SessionContextManager #BBCC33 {
 }
-class "SqlAlchemyDatbase" as restaurant_app.store.database.SqlAlchemyDatbase {
+class "SqlAlchemyDatbase" as restaurant_app.store.database.SqlAlchemyDatbase #BBCC33 {
   create_database() -> None
   drop_database() -> None
-  session() -> Callable[..., AbstractContextManager[Session]]
+  managed_session() -> Callable[..., AbstractContextManager[Session]]
 }
-class "TableModel" as restaurant_app.store.models.TableModel {
-  id : Mapped[int]
-  orders : Mapped[List['OrderModel']]
-  reservations : Mapped[List['ReservationModel']]
-  restaurant : Mapped[RestaurantModel]
-  retaurant_id : Mapped[int]
+class "TableEntity" as restaurant_app.store.entities.TableEntity #BBCC33 {
+  orders : Mapped[List['OrderEntity']]
+  reservations : Mapped[List['ReservationEntity']]
+  restaurant : Mapped[RestaurantEntity]
+  restaurant_id : Mapped[int]
   seats : Mapped[int]
   table_number : Mapped[str]
 }
+class "TableModel" as restaurant_app.restaurant.models.TableModel #44BB99 {
+  id : int
+  number : str
+  places : int
+}
+class "TableRepository" as restaurant_app.store.table_repository.TableRepository #BBCC33 {
+  get_table_by_id(id: int) -> TableEntity
+  get_tables_for_restaurant(restaurant_id: int) -> List[TableEntity]
+  get_tables_with_capacity(capacity: int, restaurant_id: int) -> List[TableEntity]
+  new_session(session: Session) -> Self
+  save(table: TableEntity) -> TableEntity
+}
+class "WeekDay" as restaurant_app.restaurant.models.WeekDay #44BB99 {
+  name
+}
+restaurant_app.store.entities.AddressEntity --|> restaurant_app.store.entities.BaseEntity
+restaurant_app.store.entities.MenuEntity --|> restaurant_app.store.entities.BaseEntity
+restaurant_app.store.entities.OrderEntity --|> restaurant_app.store.entities.BaseEntity
+restaurant_app.store.entities.ReservationEntity --|> restaurant_app.store.entities.BaseEntity
+restaurant_app.store.entities.RestaurantEntity --|> restaurant_app.store.entities.BaseEntity
+restaurant_app.store.entities.TableEntity --|> restaurant_app.store.entities.BaseEntity
+restaurant_app.store.menu_repository.MenuRepository --|> restaurant_app.store.base_repository.BaseRepository
+restaurant_app.store.reservation_repo.ReservationRepository --|> restaurant_app.store.base_repository.BaseRepository
 restaurant_app.store.restaurant_repository.RestaurantRepository --|> restaurant_app.store.base_repository.BaseRepository
-restaurant_app.store.models.AddressModel --o restaurant_app.store.models.RestaurantModel : address
-restaurant_app.store.restaurant_repository.RestaurantRepository --o restaurant_app.restaurant.services.restaurant.RestaurantService : _repo
+restaurant_app.store.table_repository.TableRepository --|> restaurant_app.store.base_repository.BaseRepository
+restaurant_app.restaurant.models.AddressModel --* restaurant_app.restaurant.models.RestaurantModel : address
+restaurant_app.restaurant.models.TableModel --* restaurant_app.reservation.models.ReservationModel : reserved_table
+restaurant_app.store.base_repository.SessionContextManager --* restaurant_app.store.base_repository.BaseRepository : _session
+restaurant_app.restaurant.service.RestaurantService --o restaurant_app.reservation.service.ReservationService : _restaurant_svc
+restaurant_app.store.entities.AddressEntity --o restaurant_app.store.entities.RestaurantEntity : address
+restaurant_app.store.menu_repository.MenuRepository --o restaurant_app.restaurant.service.RestaurantService : _menu_repo
+restaurant_app.store.reservation_repo.ReservationRepository --o restaurant_app.reservation.service.ReservationService : _reservation_repo
+restaurant_app.store.restaurant_repository.RestaurantRepository --o restaurant_app.restaurant.service.RestaurantService : _restaurant_repo
+restaurant_app.store.table_repository.TableRepository --o restaurant_app.reservation.service.ReservationService : _table_repo
+restaurant_app.store.table_repository.TableRepository --o restaurant_app.restaurant.service.RestaurantService : _table_repo
 @enduml

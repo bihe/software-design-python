@@ -48,7 +48,7 @@ test: ## run the unit-tests of the application
 
 class-diagram: ## generate a class-diagram with pyreverse
 	@echo "  >  generate a class-diagram with pyreverse"
-	pyreverse -o plantuml --verbose -p restaurant_app -d ./doc ./src/restaurant_app
+	pyreverse -o plantuml --verbose --colorized --ignore=restaurant_repository_test.py --ignore=service_test.py --ignore=menu_repository_test.py --ignore=repository_test_helpers.py --ignore=reservation_repo_test.py --ignore=table_repo_test.py -p restaurant_app -d ./doc ./src/restaurant_app
 
 db-create: ## create the database based on the models
 	@echo "  >  create the database / update models"

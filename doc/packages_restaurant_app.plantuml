@@ -1,35 +1,86 @@
 @startuml packages_restaurant_app
 set namespaceSeparator none
-package "restaurant_app" as restaurant_app {
+package "restaurant_app" as restaurant_app #77AADD {
 }
-package "restaurant_app.restaurant" as restaurant_app.restaurant {
+package "restaurant_app.reservation" as restaurant_app.reservation #99DDFF {
 }
-package "restaurant_app.restaurant.root_views" as restaurant_app.restaurant.root_views {
+package "restaurant_app.reservation.models" as restaurant_app.reservation.models #99DDFF {
 }
-package "restaurant_app.restaurant.service" as restaurant_app.restaurant.service {
+package "restaurant_app.reservation.service" as restaurant_app.reservation.service #99DDFF {
 }
-package "restaurant_app.restaurant.services" as restaurant_app.restaurant.services {
+package "restaurant_app.reservation.service_test" as restaurant_app.reservation.service_test #99DDFF {
 }
-package "restaurant_app.restaurant.services.restaurant" as restaurant_app.restaurant.services.restaurant {
+package "restaurant_app.restaurant" as restaurant_app.restaurant #44BB99 {
 }
-package "restaurant_app.store" as restaurant_app.store {
+package "restaurant_app.restaurant.models" as restaurant_app.restaurant.models #44BB99 {
 }
-package "restaurant_app.store.base_repository" as restaurant_app.store.base_repository {
+package "restaurant_app.restaurant.root_views" as restaurant_app.restaurant.root_views #44BB99 {
 }
-package "restaurant_app.store.database" as restaurant_app.store.database {
+package "restaurant_app.restaurant.service" as restaurant_app.restaurant.service #44BB99 {
 }
-package "restaurant_app.store.models" as restaurant_app.store.models {
+package "restaurant_app.restaurant.service_model_mapper" as restaurant_app.restaurant.service_model_mapper #44BB99 {
 }
-package "restaurant_app.store.restaurant_repository" as restaurant_app.store.restaurant_repository {
+package "restaurant_app.restaurant.service_test" as restaurant_app.restaurant.service_test #44BB99 {
 }
-package "restaurant_app.store.restaurant_repository_test" as restaurant_app.store.restaurant_repository_test {
+package "restaurant_app.store" as restaurant_app.store #BBCC33 {
+}
+package "restaurant_app.store.base_repository" as restaurant_app.store.base_repository #BBCC33 {
+}
+package "restaurant_app.store.database" as restaurant_app.store.database #BBCC33 {
+}
+package "restaurant_app.store.entities" as restaurant_app.store.entities #BBCC33 {
+}
+package "restaurant_app.store.menu_repository" as restaurant_app.store.menu_repository #BBCC33 {
+}
+package "restaurant_app.store.menu_repository_test" as restaurant_app.store.menu_repository_test #BBCC33 {
+}
+package "restaurant_app.store.repository_test_helpers" as restaurant_app.store.repository_test_helpers #BBCC33 {
+}
+package "restaurant_app.store.reservation_repo" as restaurant_app.store.reservation_repo #BBCC33 {
+}
+package "restaurant_app.store.reservation_repo_test" as restaurant_app.store.reservation_repo_test #BBCC33 {
+}
+package "restaurant_app.store.restaurant_repository" as restaurant_app.store.restaurant_repository #BBCC33 {
+}
+package "restaurant_app.store.restaurant_repository_test" as restaurant_app.store.restaurant_repository_test #BBCC33 {
+}
+package "restaurant_app.store.table_repository" as restaurant_app.store.table_repository #BBCC33 {
+}
+package "restaurant_app.store.table_repository_test" as restaurant_app.store.table_repository_test #BBCC33 {
 }
 restaurant_app --> restaurant_app.restaurant
-restaurant_app.restaurant.root_views --> restaurant_app.restaurant.services.restaurant
-restaurant_app.store.models --> restaurant_app.store.database
+restaurant_app.reservation.service --> restaurant_app.reservation.models
+restaurant_app.reservation.service_test --> restaurant_app.reservation.models
+restaurant_app.reservation.service_test --> restaurant_app.reservation.service
+restaurant_app.restaurant.root_views --> restaurant_app.restaurant.service
+restaurant_app.restaurant.service --> restaurant_app.restaurant.models
+restaurant_app.restaurant.service --> restaurant_app.restaurant.service_model_mapper
+restaurant_app.restaurant.service_model_mapper --> restaurant_app.restaurant.models
+restaurant_app.restaurant.service_test --> restaurant_app.restaurant.service
+restaurant_app.store.entities --> restaurant_app.store.database
+restaurant_app.store.menu_repository --> restaurant_app.store.base_repository
+restaurant_app.store.menu_repository --> restaurant_app.store.entities
+restaurant_app.store.menu_repository_test --> restaurant_app.store.entities
+restaurant_app.store.menu_repository_test --> restaurant_app.store.menu_repository
+restaurant_app.store.menu_repository_test --> restaurant_app.store.repository_test_helpers
+restaurant_app.store.menu_repository_test --> restaurant_app.store.restaurant_repository
+restaurant_app.store.repository_test_helpers --> restaurant_app.store.database
+restaurant_app.store.repository_test_helpers --> restaurant_app.store.entities
+restaurant_app.store.reservation_repo --> restaurant_app.store.base_repository
+restaurant_app.store.reservation_repo --> restaurant_app.store.entities
+restaurant_app.store.reservation_repo_test --> restaurant_app.store.entities
+restaurant_app.store.reservation_repo_test --> restaurant_app.store.repository_test_helpers
+restaurant_app.store.reservation_repo_test --> restaurant_app.store.reservation_repo
+restaurant_app.store.reservation_repo_test --> restaurant_app.store.restaurant_repository
+restaurant_app.store.reservation_repo_test --> restaurant_app.store.table_repository
 restaurant_app.store.restaurant_repository --> restaurant_app.store.base_repository
-restaurant_app.store.restaurant_repository --> restaurant_app.store.models
-restaurant_app.store.restaurant_repository_test --> restaurant_app.store.database
-restaurant_app.store.restaurant_repository_test --> restaurant_app.store.models
+restaurant_app.store.restaurant_repository --> restaurant_app.store.entities
+restaurant_app.store.restaurant_repository_test --> restaurant_app.store.repository_test_helpers
 restaurant_app.store.restaurant_repository_test --> restaurant_app.store.restaurant_repository
+restaurant_app.store.table_repository --> restaurant_app.store.base_repository
+restaurant_app.store.table_repository --> restaurant_app.store.entities
+restaurant_app.store.table_repository_test --> restaurant_app.store.entities
+restaurant_app.store.table_repository_test --> restaurant_app.store.repository_test_helpers
+restaurant_app.store.table_repository_test --> restaurant_app.store.restaurant_repository
+restaurant_app.store.table_repository_test --> restaurant_app.store.table_repository
 @enduml
