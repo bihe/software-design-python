@@ -13,7 +13,7 @@ from .config import Config
 class Container(containers.DeclarativeContainer):
 
     # https://python-dependency-injector.ets-labs.org/wiring.html#making-injections-into-modules-and-class-attributes
-    wiring_config = containers.WiringConfiguration(packages=[__name__, "..restaurant.root_views"])
+    wiring_config = containers.WiringConfiguration(packages=[__name__, "..restaurant.views"])
     db = providers.Singleton(SqlAlchemyDatbase, db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
 
     # define the factories for the repositories

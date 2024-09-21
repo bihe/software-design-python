@@ -15,8 +15,6 @@ class Config(yaml.YAMLObject):
 
     def __init__(self):
         self.SECRET_KEY = ""
-        self.STATIC_FOLDER = ""
-        self.TEMPLATES_FOLDER = ""
         self.FLASK_ENV = ""
         self.DEBUG = True
         self.TESTING = True

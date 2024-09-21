@@ -1,6 +1,4 @@
 # basic flask app settings
-STATIC_FOLDER: "static"
-TEMPLATES_FOLDER: templates"
 FLASK_ENV: "production"
 DEBUG: false
 TESTING: false

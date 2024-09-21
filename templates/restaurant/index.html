@@ -1,0 +1,41 @@
+{% extends '_layout.html' %}
+
+{% block header %}
+  <h1>{% block title %}Restaurants{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <h3>List of restaurants
+
+    <button type="button" class="btn btn-primary restaurant-add-btn">
+        + Add Restaurant
+    </button>
+
+  </h3>
+
+
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Address</th>
+        <th scope="col">Open</th>
+        <th scope="col">Tables</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in restaurants %}
+      <tr>
+        <th scope="row">{{ r.id }}</th>
+        <td>{{ r.name }}</td>
+        <td>{{ r.address.street }}, {{ r.address.zip }} {{ r.address.city }}, {{ r.address.countryCode }}</td>
+        <td>{{ r.displayOpenTime() }}</td>
+        <td>{{ r.tableCount() }}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+
+{% endblock %}

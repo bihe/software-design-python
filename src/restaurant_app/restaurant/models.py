@@ -46,3 +46,11 @@ class RestaurantModel:
     address: AddressModel
     tables: List[TableModel]
     menus: List[MenuModel]
+
+    def displayOpenTime(self) -> str:
+        return f"{self.openFrom[0]:02}:{self.openFrom[1]:02} - {self.openUntil[0]:02}:{self.openUntil[1]:02}"
+
+    def tableCount(self) -> int:
+        if self.tables is None:
+            return 0
+        return len(self.tables)

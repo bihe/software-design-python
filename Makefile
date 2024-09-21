@@ -60,11 +60,11 @@ db-import: ## import initial data into database
 
 container-build: ## build container image of the restaurant-app
 	@echo "  >  build the container-image"
-	docker build -t restaurant_app -f ./container/Dockerfile -t restaurant_app .
+	docker build -t restaurant_app -f ./container/Dockerfile .
 
 container-run: ## run the estaurant-app container
 	@echo "  >  run the container-image"
-	docker stop restaurant-app && docker rm restaurant-app && docker run -p 9000:9000 --name restaurant-app restaurant_app
+	docker stop restaurant-app || true && docker rm restaurant-app || true && docker run -p 9000:9000 --name restaurant-app restaurant_app
 
 ## Help:
 help: ## Show this help.

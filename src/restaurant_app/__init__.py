@@ -37,7 +37,12 @@ def create_app():
 
     # routes via Flask blueprints
     # the same as above, we want to wait for a proper config init until we load the blueprints
-    from .restaurant import root_views
+    from .restaurant import views as restaurant_views
 
-    app.register_blueprint(root_views.bp)
+    app.register_blueprint(restaurant_views.bp)
+
+    from .auth import views as auth_views
+
+    app.register_blueprint(auth_views.bp)
+
     return app
