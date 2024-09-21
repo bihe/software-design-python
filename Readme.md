@@ -25,6 +25,12 @@ In a **Unix-like environments** like Mac/Linux typically a good shell is availab
 
 For **Windows** a good combination of shell/terminal is [PowerShell](https://github.com/PowerShell/PowerShell)/[Windows Terminal](https://learn.microsoft.com/en-us/windows/terminal/). 
 
+**Powershell**: For windows users it is quite helpful to set the execution-policy for powershell:
+
+```bash
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
 **NOTE**: If you use [cmd.exe](https://en.wikipedia.org/wiki/Cmd.exe), you are without help. Nobody should use this old command-interpreter anymore!
 
 ## Development
