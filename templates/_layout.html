@@ -32,9 +32,9 @@
                 <a class="nav-link" href="#">Link</a>
               </li>
             </ul>
-            <form role="search">
-              <input class="form-control" type="search" placeholder="Search" aria-label="Search" control-id="ControlID-4">
-            </form>
+
+            <span class="badge d-flex align-items-center p-1 pe-2 text-dark-emphasis bg-light-subtle border border-dark-subtle rounded-pill">
+              <i class="bi bi-person-circle"></i>&nbsp;<a href="{{ url_for('auth.logout') }}" class="logout_link" title="logout">{{ g.user }}</a></span>
           </div>
         </div>
       </nav>

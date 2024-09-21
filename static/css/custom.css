@@ -3,3 +3,10 @@
     right: 20px;
     top: 60px;
 }
+.logout_link {
+    color: white;
+    text-decoration: none;
+}
+.logout_link:hover {
+    color: yellow;
+}
