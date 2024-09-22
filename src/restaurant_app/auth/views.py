@@ -1,8 +1,19 @@
 import functools
 
-from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
+from dependency_injector.wiring import Provide, inject
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from ..infrastructure.cache import Cache
+from ..infrastructure.container import Container
 from ..infrastructure.logger import LOG
+from ..shared.view_helpers import (
+    clear_session,
+    delete_user_from_cache,
+    get_user_id_from_session,
+    put_user_to_cache,
+    set_user_id_to_session,
+)
+from .models import User
 
 bp = Blueprint("auth", __name__)
 
@@ -11,20 +22,24 @@ bp = Blueprint("auth", __name__)
 def show_login():
     """show the login form if there is no authenticated user available"""
     LOG.info("view auth/login-required")
-
     return render_template("auth/login.html")
 
 
 @bp.get("/logout")
-def logout():
-    """show the login form if there is no authenticated user available"""
+@inject
+def logout(cache: Cache = Provide[Container.cache]):
+    """perform a logout and redirect to the root URL"""
     LOG.info("view auth/logout")
-    session.clear()
+    user_id = get_user_id_from_session()
+    if user_id is not None:
+        delete_user_from_cache(cache, user_id)
+        clear_session()
     return redirect("/")
 
 
 @bp.post("/login")
-def login():
+@inject
+def login(cache: Cache = Provide[Container.cache]):
     """this is a very, very simple login/auth method which does not really validate the user.
     in reality one would use a real authentication system!!
     """
@@ -35,17 +50,11 @@ def login():
         flash("No email was supplied!")
         return redirect(url_for("auth.show_login"))
 
-    session.clear()
-    session["user"] = login_email
+    clear_session()
+    user = User(id=1, display_name="Restaurant Admin", email=login_email)
+    set_user_id_to_session(user.id)
+    put_user_to_cache(cache, user)
     return redirect("/")
-
-
-@bp.before_app_request
-def load_logged_in_user():
-    if session.get("user") is None:
-        g.user = "Anonymous"
-    else:
-        g.user = session.get("user")
 
 
 def login_required(view):
@@ -53,8 +62,9 @@ def login_required(view):
 
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if session.get("user") is None:
-            return redirect(url_for("auth.show_login"))
-        return view(**kwargs)
+        user_id = get_user_id_from_session()
+        if user_id is not None:
+            return view(**kwargs)
+        return redirect(url_for("auth.show_login"))
 
     return wrapped_view

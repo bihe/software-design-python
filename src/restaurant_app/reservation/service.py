@@ -18,7 +18,7 @@ class ReservationError(Exception):
         super().__init__(self.message)
 
 
-# we need to ensure that we do not have race-conditions during reseration
+# we need to ensure that we do not have race-conditions during reservation-process
 mutex = threading.Lock()
 
 

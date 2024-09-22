@@ -1,12 +1,19 @@
 import os
 from os import path
 
-from flask import Flask
+from flask import Flask, redirect, url_for
 
 from .cli.database import db_cli
 from .infrastructure.config import Config, setup_config
 from .infrastructure.environment import setup_environment
-from .infrastructure.logger import setup_logging
+from .infrastructure.logger import LOG, setup_logging
+from .shared.view_helpers import UserCacheMissError
+
+
+def handle_user_cache_miss(e: Exception):
+    """if there is no user in the cache, show the login again!"""
+    LOG.error(f"{e}")
+    return redirect(url_for("auth.show_login"))
 
 
 def create_app():
@@ -34,6 +41,9 @@ def create_app():
 
     container = Container()
     app.container = container
+
+    # register error handlers
+    app.register_error_handler(UserCacheMissError, handle_user_cache_miss)
 
     # routes via Flask blueprints
     # the same as above, we want to wait for a proper config init until we load the blueprints

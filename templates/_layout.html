@@ -33,8 +33,17 @@
               </li>
             </ul>
 
-            <span class="badge d-flex align-items-center p-1 pe-2 text-dark-emphasis bg-light-subtle border border-dark-subtle rounded-pill">
-              <i class="bi bi-person-circle"></i>&nbsp;<a href="{{ url_for('auth.logout') }}" class="logout_link" title="logout">{{ g.user }}</a></span>
+
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle"></i>&nbsp;{{ user.display_name }}
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item"><i class="bi bi-envelope-at"></i> {{ user.email }}</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
+              </ul>
+            </div>
+
           </div>
         </div>
       </nav>
