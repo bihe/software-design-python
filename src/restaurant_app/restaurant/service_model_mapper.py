@@ -46,18 +46,19 @@ def mapEntityToModel(res: RestaurantEntity) -> RestaurantModel:
 
     restaurant_model = RestaurantModel(
         id=res.id,
+        id_hash="",
         address=AddressModel(
             street=res.address.street,
             zip=res.address.zip,
             city=res.address.city,
-            countryCode=res.address.country,
+            country_code=res.address.country,
         ),
         menus=None,
         tables=None,
         name=res.name,
-        openFrom=_mapTimeToHours(res.open_from),
-        openUntil=_mapTimeToHours(res.open_until),
-        openDays=open_days,
+        open_from=_mapTimeToHours(res.open_from),
+        open_until=_mapTimeToHours(res.open_until),
+        open_days=open_days,
     )
 
     # map to MenuModel

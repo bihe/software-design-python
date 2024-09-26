@@ -8,7 +8,7 @@ class AddressModel:
     street: str
     city: str
     zip: str
-    countryCode: str
+    country_code: str
 
 
 @dataclass
@@ -39,18 +39,25 @@ class WeekDay(enum.StrEnum):
 @dataclass
 class RestaurantModel:
     id: int
+    id_hash: str
     name: str
-    openDays: List[WeekDay]
-    openFrom: List[int]
-    openUntil: List[int]
+    open_days: List[WeekDay]
+    open_from: List[int]
+    open_until: List[int]
     address: AddressModel
     tables: List[TableModel]
     menus: List[MenuModel]
 
-    def displayOpenTime(self) -> str:
-        return f"{self.openFrom[0]:02}:{self.openFrom[1]:02} - {self.openUntil[0]:02}:{self.openUntil[1]:02}"
+    def open_from_format(self) -> str:
+        return f"{self.open_from[0]:02}:{self.open_from[1]:02}"
 
-    def tableCount(self) -> int:
+    def open_until_format(self) -> str:
+        return f"{self.open_until[0]:02}:{self.open_until[1]:02}"
+
+    def display_open_time(self) -> str:
+        return f"{self.open_from[0]:02}:{self.open_from[1]:02} - {self.open_until[0]:02}:{self.open_until[1]:02}"
+
+    def table_count(self) -> int:
         if self.tables is None:
             return 0
         return len(self.tables)

@@ -7,13 +7,25 @@ from .cli.database import db_cli
 from .infrastructure.config import Config, setup_config
 from .infrastructure.environment import setup_environment
 from .infrastructure.logger import LOG, setup_logging
-from .shared.view_helpers import UserCacheMissError
+from .shared.view_helpers import BadRequestHashError, NotFoundError, UserCacheMissError
 
 
 def handle_user_cache_miss(e: Exception):
     """if there is no user in the cache, show the login again!"""
     LOG.error(f"{e}")
     return redirect(url_for("auth.show_login"))
+
+
+def handle_bad_request_hash(e: Exception):
+    """bad request based on hash mismatch"""
+    LOG.error(f"{e}")
+    return str(e), 400
+
+
+def handle_not_found(e: Exception):
+    """object cannot be found"""
+    LOG.error(f"{e}")
+    return str(e), 404
 
 
 def create_app():
@@ -44,6 +56,8 @@ def create_app():
 
     # register error handlers
     app.register_error_handler(UserCacheMissError, handle_user_cache_miss)
+    app.register_error_handler(BadRequestHashError, handle_bad_request_hash)
+    app.register_error_handler(NotFoundError, handle_not_found)
 
     # routes via Flask blueprints
     # the same as above, we want to wait for a proper config init until we load the blueprints
@@ -54,5 +68,10 @@ def create_app():
     from .auth import views as auth_views
 
     app.register_blueprint(auth_views.bp)
+
+    # define starting URL
+    @app.route("/")
+    def index():
+        return redirect("/restaurants")
 
     return app

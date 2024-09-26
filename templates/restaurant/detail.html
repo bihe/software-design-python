@@ -1,0 +1,66 @@
+{% extends '_layout.html' %}
+
+{% block header %}
+  <h1>{% block title %}Restaurant: {{ restaurant.name }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h3>Restaurant:</h3>
+
+    {% if errors %}
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+      <div>
+        <strong>Errors:</strong>
+        <ul>
+          {% for err in errors %}
+          <li style="list-style:none"><i class="bi bi-exclamation-triangle" style="font-size: 1rem;"></i> {{ err.msg }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+
+    <form class="row g-3" action="{{ url_for('restaurant.save', restaurant_id=restaurant.id)}}" method="POST">
+      <input type="hidden" name="h" value="{{ restaurant.id_hash}}"/>
+      <div class="col-md-12">
+        <label for="name" class="form-label">Restaurant Name</label>
+        <input type="input" name="name" class="form-control" id="name" value="{{ restaurant.name }}">
+      </div>
+      <div class="col-md-5">
+        <label for="addr.street" class="form-label">Street</label>
+        <input type="input" class="form-control" id="addr.street" name="address.street" value="{{ restaurant.address.street }}">
+      </div>
+      <div class="col-md-1">
+        <label for="addr.zip" class="form-label">Zip</label>
+        <input type="text" class="form-control" placeholder="Zip" id="address.zip" name="address.zip" value="{{ restaurant.address.zip }}">
+      </div>
+      <div class="col-md-4">
+        <label for="addr.city" class="form-label">City</label>
+        <input type="text" class="form-control" placeholder="City" id="address.city" name="address.city" value="{{ restaurant.address.city }}">
+      </div>
+      <div class="col-md-2">
+        <label for="addr.country" class="form-label">Country</label>
+        <select class="form-select" aria-label="Select a country" id="addr.country" name="address.country">
+          <option selected>Select a country</option>
+          <option value="AT" {{'selected' if restaurant.address.country_code == "AT"}}>Austria</option>
+          <option value="DE" {{'selected' if restaurant.address.country_code == "DE"}}>Germany</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label for="open_from" class="form-label">Open from</label>
+        <input type="time" class="form-control" placeholder="Open from" id="open_from" name="open_from" value="{{ restaurant.open_from_format() }}">
+      </div>
+      <div class="col-md-2">
+        <label for="open_until" class="form-label">Open until</label>
+        <input type="time" class="form-control" placeholder="Open until" id="open_until" name="open_until" value="{{ restaurant.open_until_format() }}">
+      </div>
+
+      <div class="col-12">
+        <a href="/restaurants" class="btn btn-secondary" role="button">Cancel</a>
+        <button type="submit" class="btn btn-primary float-end">Save</button>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}

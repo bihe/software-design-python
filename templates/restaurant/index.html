@@ -28,11 +28,11 @@
     <tbody>
       {% for r in restaurants %}
       <tr>
-        <th scope="row">{{ r.id }}</th>
-        <td>{{ r.name }}</td>
-        <td>{{ r.address.street }}, {{ r.address.zip }} {{ r.address.city }}, {{ r.address.countryCode }}</td>
-        <td>{{ r.displayOpenTime() }}</td>
-        <td>{{ r.tableCount() }}</td>
+        <th scope="row">{{ loop.index }}</th>
+        <td><a href="/restaurant/{{ r.id }}?h={{ r.id_hash }}">{{ r.name }}</a></td>
+        <td>{{ r.address.street }}, {{ r.address.zip }} {{ r.address.city }}, {{ r.address.country_code }}</td>
+        <td>{{ r.display_open_time() }}</td>
+        <td>{{ r.table_count() }}</td>
       </tr>
     </tbody>
     {% endfor %}

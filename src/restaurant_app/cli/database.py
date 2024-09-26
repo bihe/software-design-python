@@ -95,9 +95,9 @@ def import_from_json(filename: str):
         menus=None,
         tables=None,
         name=restaurant.name,
-        openFrom=restaurant.openFrom,
-        openUntil=restaurant.openUntil,
-        openDays=openDays,
+        open_from=restaurant.openFrom,
+        open_until=restaurant.openUntil,
+        open_days=openDays,
     )
 
     # map to AddressModel
@@ -105,7 +105,7 @@ def import_from_json(filename: str):
         street=restaurant.address.street,
         zip=restaurant.address.zip,
         city=restaurant.address.city,
-        countryCode=restaurant.address.countryCode,
+        country_code=restaurant.address.countryCode,
     )
     restaurant_model.address = address
 

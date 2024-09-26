@@ -36,6 +36,12 @@ class RestaurantService:
                 restaurants.append(mapEntityToModel(r))
         return restaurants
 
+    def get_by_id(self, id: int) -> RestaurantModel:
+        res = self._restaurant_repo.get_restaurant_by_id(id)
+        if res is None:
+            return None
+        return mapEntityToModel(res)
+
     def is_restaurant_open(
         self, restaurant_id: int, date: datetime.date, time_from: datetime.time, time_until: datetime.time
     ) -> bool:
@@ -48,7 +54,7 @@ class RestaurantService:
         # 1) get the weekday of the date to determine if the restaurant is open
         open_on_date = False
         weekday_name = calendar.day_name[date.weekday()]
-        for day in restaurant_model.openDays:
+        for day in restaurant_model.open_days:
             if str(day) == weekday_name.upper():
                 open_on_date = True
                 break
@@ -56,8 +62,8 @@ class RestaurantService:
             return False
 
         # 2) check if the given time is within the opening hours of the restaurant
-        open_from = datetime.time(restaurant_model.openFrom[0], restaurant_model.openFrom[1])
-        open_until = datetime.time(restaurant_model.openUntil[0], restaurant_model.openUntil[1])
+        open_from = datetime.time(restaurant_model.open_from[0], restaurant_model.open_from[1])
+        open_until = datetime.time(restaurant_model.open_until[0], restaurant_model.open_until[1])
 
         if time_from >= open_from and time_until <= open_until:
             return True
@@ -77,7 +83,7 @@ class RestaurantService:
             find_addr.city = a.city
             find_addr.street = a.street
             find_addr.zip = a.zip
-            find_addr.country = a.countryCode
+            find_addr.country = a.country_code
 
             addr = res_repo.find_address(find_addr)
             if addr is None:
@@ -87,7 +93,7 @@ class RestaurantService:
                 addr.city = a.city
                 addr.street = a.street
                 addr.zip = a.zip
-                addr.country = a.countryCode
+                addr.country = a.country_code
 
             # determine if this is a new entry or if the restaurant-entry exists
             store_restaurant = RestaurantEntity()
@@ -104,9 +110,9 @@ class RestaurantService:
 
             # set the values of the restaurant with the provided values
             store_restaurant.name = restaurant.name
-            store_restaurant.open_from = time(restaurant.openFrom[0], restaurant.openFrom[1], 0)
-            store_restaurant.open_until = time(restaurant.openUntil[0], restaurant.openUntil[1], 0)
-            store_restaurant.open_days = mapDayFromEnum(restaurant.openDays)
+            store_restaurant.open_from = time(restaurant.open_from[0], restaurant.open_from[1], 0)
+            store_restaurant.open_until = time(restaurant.open_until[0], restaurant.open_until[1], 0)
+            store_restaurant.open_days = mapDayFromEnum(restaurant.open_days)
             store_restaurant.address = addr
 
             saved = res_repo.save(store_restaurant)
