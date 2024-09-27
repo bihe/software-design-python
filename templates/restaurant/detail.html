@@ -1,60 +1,56 @@
 {% extends '_layout.html' %}
 
 {% block header %}
-  <h1>{% block title %}Restaurant: {{ restaurant.name }}{% endblock %}</h1>
+  <h1>{% block title %}Restaurant: {{ form.name.data }}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
   <div class="container">
     <h3>Restaurant:</h3>
 
-    {% if errors %}
-    <div class="alert alert-danger d-flex align-items-center" role="alert">
-      <div>
-        <strong>Errors:</strong>
-        <ul>
-          {% for err in errors %}
-          <li style="list-style:none"><i class="bi bi-exclamation-triangle" style="font-size: 1rem;"></i> {{ err.msg }}</li>
-          {% endfor %}
-        </ul>
-      </div>
+    {% if form.errors %}
+    <div class="alert alert-danger" role="alert">
+      <i class="bi bi-exclamation-octagon"></i> Could not procede because of validation errors!
     </div>
     {% endif %}
 
-    <form class="row g-3" action="{{ url_for('restaurant.save', restaurant_id=restaurant.id)}}" method="POST">
-      <input type="hidden" name="h" value="{{ restaurant.id_hash}}"/>
+    {% from "_formhelpers.html" import render_field, render_select_field, render_checkbox_field %}
+    <form class="row g-3" novalidate action="{{ url_for('restaurant.restaurant', restaurant_id=form.id.data, h=form.h.data)}}" method="POST">
+      {{ form.id }}
+      {{ form.h }}
+
       <div class="col-md-12">
-        <label for="name" class="form-label">Restaurant Name</label>
-        <input type="input" name="name" class="form-control" id="name" value="{{ restaurant.name }}">
+        {{ render_field(form.name) }}
       </div>
       <div class="col-md-5">
-        <label for="addr.street" class="form-label">Street</label>
-        <input type="input" class="form-control" id="addr.street" name="address.street" value="{{ restaurant.address.street }}">
+        {{ render_field(form.street) }}
       </div>
       <div class="col-md-1">
-        <label for="addr.zip" class="form-label">Zip</label>
-        <input type="text" class="form-control" placeholder="Zip" id="address.zip" name="address.zip" value="{{ restaurant.address.zip }}">
+        {{ render_field(form.zip) }}
       </div>
       <div class="col-md-4">
-        <label for="addr.city" class="form-label">City</label>
-        <input type="text" class="form-control" placeholder="City" id="address.city" name="address.city" value="{{ restaurant.address.city }}">
+        {{ render_field(form.city) }}
       </div>
       <div class="col-md-2">
-        <label for="addr.country" class="form-label">Country</label>
-        <select class="form-select" aria-label="Select a country" id="addr.country" name="address.country">
-          <option selected>Select a country</option>
-          <option value="AT" {{'selected' if restaurant.address.country_code == "AT"}}>Austria</option>
-          <option value="DE" {{'selected' if restaurant.address.country_code == "DE"}}>Germany</option>
-        </select>
+        {{ render_select_field(form.country) }}
       </div>
       <div class="col-md-2">
-        <label for="open_from" class="form-label">Open from</label>
-        <input type="time" class="form-control" placeholder="Open from" id="open_from" name="open_from" value="{{ restaurant.open_from_format() }}">
+        {{ render_field(form.open_from) }}
       </div>
       <div class="col-md-2">
-        <label for="open_until" class="form-label">Open until</label>
-        <input type="time" class="form-control" placeholder="Open until" id="open_until" name="open_until" value="{{ restaurant.open_until_format() }}">
+        {{ render_field(form.open_until) }}
       </div>
+      <div class="col-md-12">
+        <label class="form-label" >Open days</label>
+        {{ render_checkbox_field(form.open_monday) }}
+        {{ render_checkbox_field(form.open_tuesday) }}
+        {{ render_checkbox_field(form.open_wednesday) }}
+        {{ render_checkbox_field(form.open_thursday) }}
+        {{ render_checkbox_field(form.open_friday) }}
+        {{ render_checkbox_field(form.open_saturday) }}
+        {{ render_checkbox_field(form.open_sunday) }}
+      </div>
+
 
       <div class="col-12">
         <a href="/restaurants" class="btn btn-secondary" role="button">Cancel</a>

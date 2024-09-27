@@ -1,15 +1,16 @@
-import time
+import datetime
+from ast import List
 
 from dependency_injector.wiring import Provide, inject
-from flask import Blueprint, render_template, request
-from pydantic import BaseModel, ValidationError, model_validator
+from flask import Blueprint, redirect, render_template, request, url_for
 
 from ..auth.views import login_required
 from ..infrastructure.cache import Cache
 from ..infrastructure.container import Container
 from ..infrastructure.logger import LOG
 from ..shared.view_helpers import NotFoundError, get_hash_value, prepare_view_model, valid_hash, valid_hash_supplied
-from .models import AddressModel, RestaurantModel
+from .forms import RestaurantForm
+from .models import AddressModel, RestaurantModel, WeekDay
 from .service import RestaurantService
 
 bp = Blueprint("restaurant", __name__)
@@ -30,86 +31,80 @@ def index(
     return render_template("restaurant/index.html", **model_params)
 
 
-@bp.get("/restaurant/<restaurant_id>")
+def get_time(item: List) -> datetime.time:
+    return datetime.time(item[0], item[1], 0)
+
+
+@bp.route("/restaurant/<restaurant_id>", methods=["GET", "POST"])
 @login_required
 @inject
-def detail(
+def restaurant(
     restaurant_id: int,
     restaurant_svc: RestaurantService = Provide[Container.restaurant_svc],
     cache: Cache = Provide[Container.cache],
 ):
-    LOG.info("view restaurant/detail")
-    valid_hash(str(restaurant_id))
-    restaurant = restaurant_svc.get_by_id(restaurant_id)
-    if restaurant is None:
-        raise NotFoundError(f"cannot find restaurant by id '{restaurant_id}'")
-    restaurant.id_hash = get_hash_value(str(restaurant.id))
-    model_params = prepare_view_model(cache, restaurant=restaurant)
+    form: RestaurantForm = None
+
+    if request.method == "GET":
+        LOG.info(f"display the restaurant details for id '{restaurant_id}'")
+        valid_hash(str(restaurant_id))
+        restaurant = restaurant_svc.get_by_id(restaurant_id)
+        if restaurant is None:
+            raise NotFoundError(f"cannot find restaurant by id '{restaurant_id}'")
+        form = RestaurantForm(
+            data={
+                "id": restaurant.id,
+                "h": get_hash_value(str(restaurant.id)),
+                "name": restaurant.name,
+                "street": restaurant.address.street,
+                "city": restaurant.address.city,
+                "zip": restaurant.address.zip,
+                "country": restaurant.address.country_code,
+                "open_from": get_time(restaurant.open_from),
+                "open_until": get_time(restaurant.open_until),
+                "open_monday": True if (WeekDay.MONDAY in restaurant.open_days) else False,
+                "open_tuesday": True if (WeekDay.TUESDAY in restaurant.open_days) else False,
+                "open_wednesday": True if (WeekDay.WEDNESDAY in restaurant.open_days) else False,
+                "open_thursday": True if (WeekDay.THURSDAY in restaurant.open_days) else False,
+                "open_friday": True if (WeekDay.FRIDAY in restaurant.open_days) else False,
+                "open_saturday": True if (WeekDay.SATURDAY in restaurant.open_days) else False,
+                "open_sunday": True if (WeekDay.SUNDAY in restaurant.open_days) else False,
+            }
+        )
+
+    elif request.method == "POST":
+        form = RestaurantForm(request.form)
+        if form.validate():
+            valid_hash_supplied(restaurant_id, request.form["h"])
+            open_days: List[WeekDay] = []
+            if form.open_monday.data:
+                open_days.append(WeekDay.MONDAY)
+            if form.open_tuesday.data:
+                open_days.append(WeekDay.TUESDAY)
+            if form.open_wednesday.data:
+                open_days.append(WeekDay.WEDNESDAY)
+            if form.open_thursday.data:
+                open_days.append(WeekDay.THURSDAY)
+            if form.open_friday.data:
+                open_days.append(WeekDay.FRIDAY)
+            if form.open_saturday.data:
+                open_days.append(WeekDay.SATURDAY)
+            if form.open_sunday.data:
+                open_days.append(WeekDay.SUNDAY)
+            restaurant = RestaurantModel(
+                id=int(form.id.data),
+                name=form.name.data,
+                open_from=[form.open_from.data.hour, form.open_from.data.minute],
+                open_until=[form.open_until.data.hour, form.open_until.data.minute],
+                address=AddressModel(
+                    street=form.street.data, city=form.city.data, zip=form.zip.data, country_code=form.country.data
+                ),
+                open_days=open_days,
+                tables=None,
+                menus=None,
+            )
+            restaurant_svc.save(restaurant)
+            return redirect(url_for("restaurant.index"))
+
+    model_params = prepare_view_model(cache, form=form)
     return render_template("restaurant/detail.html", **model_params)
-
-
-class RestaurantViewModel(BaseModel):
-    name: str
-    street: str
-    zip: str
-    city: str
-    country: str
-    open_from: str
-    open_until: str
-
-    @model_validator(mode="after")
-    def validate_open_times(self):
-        time_open_from = time.strptime(self.open_from, "%H:%M")
-        time_open_until = time.strptime(self.open_until, "%H:%M")
-        if time_open_until < time_open_from:
-            raise ValueError("open_until canot be before open_from")
-        return self
-
-
-@bp.post("/restaurant/<restaurant_id>")
-@login_required
-@inject
-def save(
-    restaurant_id: int,
-    restaurant_svc: RestaurantService = Provide[Container.restaurant_svc],
-    cache: Cache = Provide[Container.cache],
-):
-    LOG.info("view restaurant/save")
-    valid_hash_supplied(restaurant_id, request.form["h"])
-
-    try:
-        view_model = RestaurantViewModel(
-            name=request.form["name"],
-            street=request.form["address.street"],
-            zip=request.form["address.zip"],
-            city=request.form["address.city"],
-            country=request.form["address.country"],
-            open_from=request.form["open_from"],
-            open_until=request.form["open_until"],
-        )
-    except ValidationError as e:
-        LOG.debug(f"got validaton error: {e}")
-        time_open_from = time.strptime(request.form["open_from"], "%H:%M")
-        time_open_until = time.strptime(request.form["open_until"], "%H:%M")
-        restaurant = RestaurantModel(
-            id=restaurant_id,
-            id_hash=request.form["h"],
-            name=request.form["name"],
-            address=AddressModel(
-                city=request.form["address.city"],
-                zip=request.form["address.city"],
-                street=request.form["address.street"],
-                country_code=request.form["address.country"],
-            ),
-            open_from=[time_open_from.tm_hour, time_open_from.tm_min],
-            open_until=[time_open_until.tm_hour, time_open_until.tm_min],
-            tables=[],
-            menus=[],
-            open_days=[],
-        )
-
-        model_params = prepare_view_model(cache, restaurant=restaurant)
-        model_params["errors"] = e.errors()
-        return render_template("restaurant/detail.html", **model_params)
-
-    return str(view_model)

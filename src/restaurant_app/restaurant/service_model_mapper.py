@@ -46,7 +46,6 @@ def mapEntityToModel(res: RestaurantEntity) -> RestaurantModel:
 
     restaurant_model = RestaurantModel(
         id=res.id,
-        id_hash="",
         address=AddressModel(
             street=res.address.street,
             zip=res.address.zip,
