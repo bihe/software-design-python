@@ -70,11 +70,11 @@ def test_reservations_for_date_time():
         res_repo = repo_restaurant.new_session(session)
         table_repo = repo_table.new_session(session)
 
-        res = create_restaurant_data()
-        res = res_repo.save(res)
+        restaurant = create_restaurant_data()
+        restaurant = res_repo.save(restaurant)
         res_repo.sync()
 
-        table = table_repo.save(TableEntity(table_number="Table1", seats=4, restaurant=res))
+        table = table_repo.save(TableEntity(table_number="Table1", seats=4, restaurant=restaurant))
         table_repo.sync()
 
         date = datetime.date(2024, 9, 10)
@@ -117,12 +117,18 @@ def test_reservations_for_date_time():
         print(res)
 
         result = []
+        result.append(restaurant.id)
         result.append(table.id)
         return result
 
     result = repo.unit_of_work(action)
-    table_id = result[0]
-    assert table_id > 0
+    table_id = result[1]
+    restaurant_id = result[0]
+    assert table_id > 0 and restaurant_id > 0
+
+    # get all the reservations
+    reservations = repo.get_reservation_for_restaurant(restaurant_id)
+    assert len(reservations) == 3
 
     # find me the reservations
     reservations = repo.get_table_reservations_for_date(datetime.date(2024, 9, 10), table_id)
@@ -134,6 +140,6 @@ def test_reservations_for_date_time():
     reservations = repo.get_table_reservations_for_date(datetime.date(2024, 9, 11), table_id)
     assert len(reservations) == 0
 
-    # undefined table resulsts in no reservations
+    # undefined table results in no reservations
     reservations = repo.get_table_reservations_for_date(datetime.date(2024, 9, 10), -1)
     assert len(reservations) == 0

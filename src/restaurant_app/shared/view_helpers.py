@@ -1,13 +1,15 @@
 import hashlib
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from flask import current_app, request, session
 
 from ..auth.models import User
 from ..infrastructure.cache import Cache
+from ..restaurant.models import RestaurantModel
 
 user_key_format = "user_"
 session_user_id = "user_id"
+restaurants_cache_key = "restaurants"
 
 
 class UserCacheMissError(Exception):
@@ -69,6 +71,18 @@ def put_user_to_cache(cache: Cache, user: User):
 
 def delete_user_from_cache(cache: Cache, user_id: str):
     cache.delete(get_user_cache_key(user_id))
+
+
+def get_restaurants_from_cache(cache: Cache) -> List[RestaurantModel]:
+    return cache.get(restaurants_cache_key)
+
+
+def put_restaurants_to_cache(cache: Cache, restaurants: List[RestaurantModel]):
+    return cache.put(restaurants_cache_key, restaurants)
+
+
+def delete_restaurants_from_cache(cache: Cache):
+    cache.delete(restaurants_cache_key)
 
 
 def prepare_view_model(cache: Cache, **kwargs) -> Dict[str, Any]:

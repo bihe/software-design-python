@@ -8,6 +8,7 @@ from ..store.entities import ReservationEntity, TableEntity
 from ..store.reservation_repo import ReservationRepository
 from ..store.table_repository import TableRepository
 from .models import ReservationModel, ReservationRequestModel
+from .service_model_mapper import mapEntityToModel
 
 
 class ReservationError(Exception):
@@ -36,9 +37,24 @@ class ReservationService:
     def __str__(self) -> str:
         return "ReservationService"
 
+    def get_reservation_for_restaurant(self, restaurant_id: int) -> List[ReservationModel]:
+        """
+        Return all available reservations for the given restaurant
+
+        Returns: List of ReservationModels
+        """
+        reservations = self._reservation_repo.get_reservation_for_restaurant(restaurant_id)
+        if reservations is None or len(reservations) == 0:
+            return []
+
+        reservation_model: List[ReservationModel] = []
+        for res in reservations:
+            reservation_model.append(mapEntityToModel(res))
+        return reservation_model
+
     def reserve(self, request: ReservationRequestModel) -> ReservationModel:
         """Provide a request for a reservation date/time/number-of-people/name.
-        The logic needes to find if a table is available for the given date/time-frame
+        The logic needs to find if a table is available for the given date/time-frame
         """
         reservation: ReservationModel = None
 

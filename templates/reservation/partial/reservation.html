@@ -1,0 +1,14 @@
+
+{% if reservations|length == 0 %}
+
+<div class="alert alert-light" role="alert">
+  Currently no reservations available for restaurant '{{ restaurant.name }}'
+</div>
+
+{% else %}
+
+  {% for r in reservations %}
+    <strong>{{ r.number }} / {{ r.name }}</strong>
+  {% endfor %}
+
+{% endif %}

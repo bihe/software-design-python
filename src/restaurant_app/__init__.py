@@ -69,6 +69,10 @@ def create_app():
 
     app.register_blueprint(auth_views.bp)
 
+    from .reservation import views as reservation_views
+
+    app.register_blueprint(reservation_views.bp)
+
     # define starting URL
     @app.route("/")
     def index():

@@ -1,0 +1,22 @@
+{% extends '_layout.html' %}
+
+{% block header %}
+  <h1>{% block title %}Reservation{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <h5>Select the restaurant to view reservations</h5>
+  <div>
+    <select name="restaurant_id" class="form-select" hx-get="/reservation/partial/~reservations" hx-target="#reservations" hx-indicator=".htmx-indicator">
+      <option value="" selected>select a restaurant</option>
+      {% for r in restaurants %}
+      <option value="{{ r.id }}">{{ r.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div id="reservations">
+    <!-- the reservations of the selected restaurant go here -->
+  </div>
+
+{% endblock %}

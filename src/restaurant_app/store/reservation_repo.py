@@ -56,6 +56,17 @@ class ReservationRepository(BaseRepository):
         with self.get_session() as session:
             return session.get(ReservationEntity, id)
 
+    def get_reservation_for_restaurant(self, restaurant_id: int) -> ReservationEntity:
+        with self.get_session() as session:
+            return (
+                session.query(ReservationEntity)
+                .join(TableEntity, ReservationEntity.tables)
+                .where(TableEntity.restaurant_id == restaurant_id)
+                .order_by(ReservationEntity.time_from.asc())
+                .order_by(TableEntity.table_number)
+                .all()
+            )
+
     def get_reservation_by_number(self, number: int) -> ReservationEntity:
         with self.get_session() as session:
             return session.query(ReservationEntity).filter(ReservationEntity.reservation_number == number).first()
