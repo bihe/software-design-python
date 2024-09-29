@@ -1,30 +1,66 @@
 @startuml classes_restaurant_app
 set namespaceSeparator none
-class "AddressEntity" as restaurant_app.store.entities.AddressEntity #BBCC33 {
+class "AddressEntity" as restaurant_app.store.entities.AddressEntity #AAAA00 {
   city : Mapped[str]
   country : Mapped[str]
   restaurants : Mapped[List['RestaurantEntity']]
   street : Mapped[str]
   zip : Mapped[str]
 }
-class "AddressModel" as restaurant_app.restaurant.models.AddressModel #44BB99 {
+class "AddressModel" as restaurant_app.restaurant.models.AddressModel #BBCC33 {
   city : str
-  countryCode : str
+  country_code : str
   street : str
   zip : str
 }
-class "BaseEntity" as restaurant_app.store.entities.BaseEntity #BBCC33 {
+class "BaseEntity" as restaurant_app.store.entities.BaseEntity #AAAA00 {
   created : Mapped[datetime.datetime]
   id : Mapped[int]
   modified : Mapped[datetime.datetime]
 }
-class "BaseRepository" as restaurant_app.store.base_repository.BaseRepository #BBCC33 {
+class "BaseRepository" as restaurant_app.store.base_repository.BaseRepository #AAAA00 {
   get_session() -> AbstractContextManager[Session]
   {abstract}new_session(session: Session) -> Self
   sync()
   unit_of_work(action: Callable[[Session], List[Any]]) -> List[Any]
 }
-class "MenuEntity" as restaurant_app.store.entities.MenuEntity #BBCC33 {
+class "Cache" as restaurant_app.infrastructure.cache.Cache #99DDFF {
+  {abstract}delete(key: str)
+  {abstract}get(key: str) -> Any
+  {abstract}put(key: str, value: Any)
+}
+class "Config" as restaurant_app.infrastructure.config.Config #99DDFF {
+  DATABASE_ECHO : bool
+  DATABASE_URI : str
+  DEBUG : bool
+  FLASK_ENV : str
+  SECRET_KEY : str
+  TESTING : bool
+  load_from_data(data_map)
+}
+class "Container" as restaurant_app.infrastructure.container.Container #99DDFF {
+  cache
+  db
+  menu_repo
+  restaurant_repo
+  restaurant_svc
+  table_repo
+  wiring_config
+}
+class "Gt" as restaurant_app.restaurant.forms.Gt #BBCC33 {
+  fieldname
+  message : NoneType
+}
+class "Lt" as restaurant_app.restaurant.forms.Lt #BBCC33 {
+  fieldname
+  message : NoneType
+}
+class "MemoryCache" as restaurant_app.infrastructure.memory_cache.MemoryCache #99DDFF {
+  delete(key: str)
+  get(key: str) -> Any
+  put(key: str, value: Any)
+}
+class "MenuEntity" as restaurant_app.store.entities.MenuEntity #AAAA00 {
   category : Mapped[str]
   name : Mapped[str]
   orders : Mapped[List['OrderEntity']]
@@ -32,29 +68,29 @@ class "MenuEntity" as restaurant_app.store.entities.MenuEntity #BBCC33 {
   restaurant : Mapped['RestaurantEntity']
   restaurant_id : Mapped[int]
 }
-class "MenuModel" as restaurant_app.restaurant.models.MenuModel #44BB99 {
+class "MenuModel" as restaurant_app.restaurant.models.MenuModel #BBCC33 {
   category : str
   id : int
   name : str
   price : float
 }
-class "MenuRepository" as restaurant_app.store.menu_repository.MenuRepository #BBCC33 {
+class "MenuRepository" as restaurant_app.store.menu_repository.MenuRepository #AAAA00 {
   get_menu_by_name(name: str, res_id: int) -> MenuEntity
   get_menu_list(res_id: int) -> List[MenuEntity]
   new_session(session: Session) -> Self
   save(menu: MenuEntity) -> MenuEntity
 }
-class "<color:red>NotFoundError</color>" as restaurant_app.restaurant.service.NotFoundError #44BB99 {
+class "<color:red>NotFoundError</color>" as restaurant_app.restaurant.service.NotFoundError #BBCC33 {
   message
 }
-class "OrderEntity" as restaurant_app.store.entities.OrderEntity #BBCC33 {
+class "OrderEntity" as restaurant_app.store.entities.OrderEntity #AAAA00 {
   menus : Mapped[List['MenuEntity']]
   table : Mapped['TableEntity']
   table_id : Mapped[int]
   total : Mapped[float]
   waiter : Mapped[str]
 }
-class "ReservationEntity" as restaurant_app.store.entities.ReservationEntity #BBCC33 {
+class "ReservationEntity" as restaurant_app.store.entities.ReservationEntity #AAAA00 {
   people : Mapped[int]
   reservation_date : Mapped[datetime.datetime]
   reservation_name : Mapped[str]
@@ -63,10 +99,10 @@ class "ReservationEntity" as restaurant_app.store.entities.ReservationEntity #BB
   time_from : Mapped[datetime.time]
   time_until : Mapped[datetime.time]
 }
-class "<color:red>ReservationError</color>" as restaurant_app.reservation.service.ReservationError #99DDFF {
+class "<color:red>ReservationError</color>" as restaurant_app.reservation.service.ReservationError #44BB99 {
   message
 }
-class "ReservationModel" as restaurant_app.reservation.models.ReservationModel #99DDFF {
+class "ReservationModel" as restaurant_app.reservation.models.ReservationModel #44BB99 {
   id : int
   name : str
   num_people : int
@@ -76,7 +112,7 @@ class "ReservationModel" as restaurant_app.reservation.models.ReservationModel #
   time_from : time
   time_until : time
 }
-class "ReservationRepository" as restaurant_app.store.reservation_repo.ReservationRepository #BBCC33 {
+class "ReservationRepository" as restaurant_app.store.reservation_repo.ReservationRepository #AAAA00 {
   get_reservation_by_id(id: int) -> ReservationEntity
   get_reservation_by_number(number: int) -> ReservationEntity
   get_table_reservations_for_date(date: datetime.date, table_id: int) -> List[ReservationEntity]
@@ -84,7 +120,7 @@ class "ReservationRepository" as restaurant_app.store.reservation_repo.Reservati
   new_session(session: Session) -> Self
   save(reservation: ReservationEntity) -> ReservationEntity
 }
-class "ReservationRequestModel" as restaurant_app.reservation.models.ReservationRequestModel #99DDFF {
+class "ReservationRequestModel" as restaurant_app.reservation.models.ReservationRequestModel #44BB99 {
   name : str
   num_people : int
   reservation_date : date
@@ -92,10 +128,10 @@ class "ReservationRequestModel" as restaurant_app.reservation.models.Reservation
   time_from : time
   time_until : time
 }
-class "ReservationService" as restaurant_app.reservation.service.ReservationService #99DDFF {
+class "ReservationService" as restaurant_app.reservation.service.ReservationService #44BB99 {
   reserve(request: ReservationRequestModel) -> ReservationModel
 }
-class "RestaurantEntity" as restaurant_app.store.entities.RestaurantEntity #BBCC33 {
+class "RestaurantEntity" as restaurant_app.store.entities.RestaurantEntity #AAAA00 {
   address : Mapped['AddressEntity']
   address_id : Mapped[int]
   menus : Mapped[List['MenuEntity']]
@@ -105,17 +141,39 @@ class "RestaurantEntity" as restaurant_app.store.entities.RestaurantEntity #BBCC
   open_until : Mapped[datetime.time]
   tables : Mapped[List['TableEntity']]
 }
-class "RestaurantModel" as restaurant_app.restaurant.models.RestaurantModel #44BB99 {
+class "RestaurantForm" as restaurant_app.restaurant.forms.RestaurantForm #BBCC33 {
+  city : StringField
+  country : SelectField
+  h : HiddenField
+  id : HiddenField
+  name : StringField
+  open_friday : BooleanField
+  open_from : TimeField
+  open_monday : BooleanField
+  open_saturday : BooleanField
+  open_sunday : BooleanField
+  open_thursday : BooleanField
+  open_tuesday : BooleanField
+  open_until : TimeField
+  open_wednesday : BooleanField
+  street : StringField
+  zip : StringField
+}
+class "RestaurantModel" as restaurant_app.restaurant.models.RestaurantModel #BBCC33 {
   address
   id : int
   menus : List[MenuModel]
   name : str
-  openDays : List[WeekDay]
-  openFrom : List[int]
-  openUntil : List[int]
+  open_days : List[WeekDay]
+  open_from : List[int]
+  open_until : List[int]
   tables : List[TableModel]
+  display_open_time() -> str
+  open_from_format() -> str
+  open_until_format() -> str
+  table_count() -> int
 }
-class "RestaurantRepository" as restaurant_app.store.restaurant_repository.RestaurantRepository #BBCC33 {
+class "RestaurantRepository" as restaurant_app.store.restaurant_repository.RestaurantRepository #AAAA00 {
   find_address(address: AddressEntity) -> AddressEntity
   find_restaurants_by_name_and_address(name: str, addr: AddressEntity) -> RestaurantEntity
   get_all_restaurants() -> List[RestaurantEntity]
@@ -123,19 +181,20 @@ class "RestaurantRepository" as restaurant_app.store.restaurant_repository.Resta
   new_session(session: Session) -> Self
   save(restaurant: RestaurantEntity) -> RestaurantEntity
 }
-class "RestaurantService" as restaurant_app.restaurant.service.RestaurantService #44BB99 {
+class "RestaurantService" as restaurant_app.restaurant.service.RestaurantService #BBCC33 {
   get_all() -> List[RestaurantModel]
+  get_by_id(id: int) -> RestaurantModel
   is_restaurant_open(restaurant_id: int, date: datetime.date, time_from: datetime.time, time_until: datetime.time) -> bool
   save(restaurant: RestaurantModel) -> RestaurantModel
 }
-class "SessionContextManager" as restaurant_app.store.base_repository.SessionContextManager #BBCC33 {
+class "SessionContextManager" as restaurant_app.store.base_repository.SessionContextManager #AAAA00 {
 }
-class "SqlAlchemyDatbase" as restaurant_app.store.database.SqlAlchemyDatbase #BBCC33 {
+class "SqlAlchemyDatbase" as restaurant_app.store.database.SqlAlchemyDatbase #AAAA00 {
   create_database() -> None
   drop_database() -> None
   managed_session() -> Callable[..., AbstractContextManager[Session]]
 }
-class "TableEntity" as restaurant_app.store.entities.TableEntity #BBCC33 {
+class "TableEntity" as restaurant_app.store.entities.TableEntity #AAAA00 {
   orders : Mapped[List['OrderEntity']]
   reservations : Mapped[List['ReservationEntity']]
   restaurant : Mapped[RestaurantEntity]
@@ -143,21 +202,22 @@ class "TableEntity" as restaurant_app.store.entities.TableEntity #BBCC33 {
   seats : Mapped[int]
   table_number : Mapped[str]
 }
-class "TableModel" as restaurant_app.restaurant.models.TableModel #44BB99 {
+class "TableModel" as restaurant_app.restaurant.models.TableModel #BBCC33 {
   id : int
   number : str
   places : int
 }
-class "TableRepository" as restaurant_app.store.table_repository.TableRepository #BBCC33 {
+class "TableRepository" as restaurant_app.store.table_repository.TableRepository #AAAA00 {
   get_table_by_id(id: int) -> TableEntity
   get_tables_for_restaurant(restaurant_id: int) -> List[TableEntity]
   get_tables_with_capacity(capacity: int, restaurant_id: int) -> List[TableEntity]
   new_session(session: Session) -> Self
   save(table: TableEntity) -> TableEntity
 }
-class "WeekDay" as restaurant_app.restaurant.models.WeekDay #44BB99 {
+class "WeekDay" as restaurant_app.restaurant.models.WeekDay #BBCC33 {
   name
 }
+restaurant_app.infrastructure.memory_cache.MemoryCache --|> restaurant_app.infrastructure.cache.Cache
 restaurant_app.store.entities.AddressEntity --|> restaurant_app.store.entities.BaseEntity
 restaurant_app.store.entities.MenuEntity --|> restaurant_app.store.entities.BaseEntity
 restaurant_app.store.entities.OrderEntity --|> restaurant_app.store.entities.BaseEntity

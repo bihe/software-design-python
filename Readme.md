@@ -85,3 +85,48 @@ To generate class-diagrams from the given project we use `pyreverse` which is pa
 # [optional] needed to generate class-diagram
 pip install pylint
 ```
+
+## Powershell based cli
+The most often used commands are provided by a powershell script to simplify the execution of the application. Simply start the `cli.ps1` script in a powershell environment.
+
+**NOTE**: it is recommended to use the [modern powershell variant](https://github.com/PowerShell/PowerShell) (formerly known [PSCore](https://learn.microsoft.com/en-us/powershell/scripting/whats-new/differences-from-windows-powershell?view=powershell-7.4)).
+
+If the script is called with the param help, or no param at all, the following information is displayed:
+
+```
+./cli.ps1 help
+
+NAME
+    ./cli.ps1
+
+SYNOPSIS
+    The powershell 'cli.ps1' scipt provides the most-often used commands for this application in a convenient was.
+
+
+SYNTAX
+    ./cli.ps1 [[-Command] <String>] [<CommonParameters>]
+
+
+DESCRIPTION
+    USAGE
+        .\cli.ps1 <command>
+
+    COMMANDS
+        run                 execute the flask-application via src/run.py
+        run-flask           exectue the flask-application as a flask-app via flask and --app
+        test                run unit-tests of the application via pytest
+        class-diagram       generate class-diagrams of the application via pyreverse (output as plantuml)
+        db-create           generate the database schema based on the code-first approach through SqlAlchemy
+        db-import           import initial data into the database vai ./data/initial_restaurant_data.json
+        container-build     create container-image of the application
+        container-run       run the application container
+        help, -?            show this help message
+
+
+RELATED LINKS
+
+REMARKS
+    To see the examples, type: "Get-Help ./cli.ps1 -Examples"
+    For more information, type: "Get-Help ./cli.ps1 -Detailed"
+    For technical information, typ
+```
