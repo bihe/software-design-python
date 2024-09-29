@@ -1,9 +1,9 @@
 # Software Design Python
 This example shows a `typical` python project using Flask as the web-development framework.
 
-## Requirements
+## 1. Requirements
 
-### Python
+### 1.1 Python
 What is python?
 > Python is an interpreted, object-oriented, high-level programming language with dynamic semantics. 
 (https://www.python.org/doc/essays/blurb/)
@@ -18,7 +18,7 @@ Go to https://www.python.org/downloads/ and download python `3.12.*` for your sy
 
 **Windows NOTE**:  When you want to execute python in a `shell` and the Windows App-Store opens, you need to deactivate this Windows-Behavior: https://stackoverflow.com/questions/58754860/cmd-opens-windows-store-when-i-type-python
 
-### Shell
+### 1.2 Shell
 Software development needs to interact with the system. Therefor we will encounter an number of CLI (command line interface) tools. To do this effectively we need to use a shell.
 
 In a **Unix-like environments** like Mac/Linux typically a good shell is available out of the box (bash, zsh) in combination with a terminal (terminal, iTerm, Konsole, gnome-terminal, ...). 
@@ -33,7 +33,7 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 **NOTE**: If you use [cmd.exe](https://en.wikipedia.org/wiki/Cmd.exe), you are without help. Nobody should use this old command-interpreter anymore!
 
-## Development
+## 2. Development
 Best practice for any python development is to start with a virtual environment. See how to do in the official python documentation: https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/
 
 > You benefit from the virtual environment since packages can be installed confidently and will not interfere with another project’s environment.
@@ -45,7 +45,7 @@ Best practice for any python development is to start with a virtual environment.
 
 <hr/>
 
-### 1. Create a new virtual environment
+### 2.1. Create a new virtual environment
 
 ```bash
 # or just python (depending on the os/system used)
@@ -64,7 +64,7 @@ source <name-of-your-virtual-environment>/bin/activate
 # afterwards your shell shows the activated venv!
 ```
 
-### 2. Install dependencies
+### 2.2. Install dependencies
 We are using the standard python package management tool [pip](https://packaging.python.org/en/latest/guides/tool-recommendations/#installing-packages). There are a couple of other python package managers out there which can be used as well (https://dev.to/adamghill/python-package-manager-comparison-1g98). 
 
 Python has introduced a `standard` way how a python project should be defined (metadata and including dependencies): [pep-0621](https://peps.python.org/pep-0621/) /  [pyproject.toml](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#writing-pyproject-toml).
@@ -86,7 +86,7 @@ To generate class-diagrams from the given project we use `pyreverse` which is pa
 pip install pylint
 ```
 
-## Powershell based cli
+## 3. Powershell based cli
 The most often used commands are provided by a powershell script to simplify the execution of the application. Simply start the `cli.ps1` script in a powershell environment.
 
 **NOTE**: it is recommended to use the [modern powershell variant](https://github.com/PowerShell/PowerShell) (formerly known [PSCore](https://learn.microsoft.com/en-us/powershell/scripting/whats-new/differences-from-windows-powershell?view=powershell-7.4)).
@@ -129,4 +129,32 @@ REMARKS
     To see the examples, type: "Get-Help ./cli.ps1 -Examples"
     For more information, type: "Get-Help ./cli.ps1 -Detailed"
     For technical information, typ
+```
+
+## 4. Application directory structure
+There is **NO** one/correct approach on how to structure an application. The main goal is to have a structure and follow it and that the chosen structure is understood by the development team. 
+```bash
+.
+├── container                       # Dockerfile and compose file to deploy/run the application in production
+├── data                            # Initial data for the application; is used by the cli implementation to load data into db
+├── doc                             # Generated and manually created documentation as PlantUML and Markdown files
+├── src                             # The python source-code of the application
+│   └── restaurant_app              # The python module restaurant_app holding the application logic
+│       ├── auth                    # Authentication logic (very, very simple - not usable for any production!)
+│       ├── cli                     # The command line interface for the application; mainly commands for the database
+│       ├── infrastructure          # Basic infrastructure code for the application, config/logging/dependency-injection/cache/...
+│       ├── reservation             # The reservation logic of the application defines how to reserve a table
+│       ├── restaurant              # The restaurant logic deals with the basic masterdata of a restaurant
+│       ├── shared                  # Components and functions used across the application (could be util as well)
+│       └── store                   # The entity logic of the application using the ORM framework (SqlAlchemy)
+├── static                          # Static content served via the http server
+│   ├── css                         # Stylesheets
+│   │   └── fonts                   # Font-files (bootstrap icons)
+│   ├── img                         # Images used in views
+│   └── js                          # Javascript used in views
+└── templates                       # jinja templates to generate views in HTML
+    ├── auth                        # Templates used for authentication logic (login)
+    └── restaurant                  # Templates used for restaurant logic
+
+21 directories
 ```
