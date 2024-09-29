@@ -37,7 +37,7 @@ function Command-run-flask {
 
 function Command-test {
     Write-Host "  >  run unit tests" -ForegroundColor Blue
-    iex "pytest --cov"
+    iex "pytest --cov --cov-report=lcov:lcov.info --cov-report=term"
 }
 
 function Command-class-diagram {
