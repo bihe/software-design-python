@@ -72,6 +72,6 @@ def create_app():
     # define starting URL
     @app.route("/")
     def index():
-        return redirect("/restaurants")
+        return redirect(url_for("restaurant.index"))
 
     return app
