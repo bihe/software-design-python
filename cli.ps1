@@ -27,12 +27,20 @@ function Command-Help { Get-Help $PSCommandPath }
 
 function Command-run {
     Write-Host "  >  executing flask application" -ForegroundColor Blue
+    $env:SECRET_KEY="very-secret"
     iex "python src/run.py"
+    $env:SECRET_KEY=$null
 }
 
 function Command-run-flask {
     Write-Host "  >  executing flask application as a module" -ForegroundColor Blue
+    $env:SECRET_KEY="very-secret"
+    $env:FLASK_RUN_HOST="localhost"
+    $env:FLASK_RUN_PORT="9000"
     iex "flask --app src/restaurant_app run"
+    $env:SECRET_KEY=$null
+    $env:FLASK_RUN_HOST=$null
+    $env:FLASK_RUN_PORT=$null
 }
 
 function Command-test {

@@ -12,14 +12,15 @@
             "env": {
                 "FLASK_APP": "src/restaurant_app",
                 "FLASK_ENV": "development",
-                "FLASK_DEBUG": "1"
+                "FLASK_DEBUG": "1",
+                "SECRET_KEY": "very-secret"
             },
             "args": [
                 "run"
             ],
             "jinja": true,
             "autoStartBrowser": false,
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/src/.env"
         },
         {
           "name": "run :: import",
@@ -36,7 +37,7 @@
           ],
           "jinja": true,
           "autoStartBrowser": false,
-          "envFile": "${workspaceFolder}/.env"
+          "envFile": "${workspaceFolder}/src/.env"
       }
     ]
 }

@@ -35,20 +35,20 @@ def create_app():
 
     app = Flask("restaurant-app")
     app_environment = os.getenv("FLASK_ENV", "production")
-    print("using environement: %s" % app_environment)
+    print("using environment: %s" % app_environment)
     config = setup_config(basedir, app_environment)
     app.config.from_object(config)
 
     # add the logic to enable cli commands
     app.cli.add_command(db_cli)
 
-    # set database seetings as a globally available variables
+    # set database settings as a globally available variables
     Config.DATABASE_URI = config.DATABASE_URI
     Config.DATABASE_ECHO = config.DATABASE_ECHO
 
     # dependency injection
     # this import is not used on the "top" level because
-    # otherwise the Container object woutl be instantiated without a proper init of the configuration
+    # otherwise the Container object would be instantiated without a proper init of the configuration
     from .infrastructure.container import Container
 
     container = Container()

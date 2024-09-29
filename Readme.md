@@ -113,7 +113,7 @@ DESCRIPTION
 
     COMMANDS
         run                 execute the flask-application via src/run.py
-        run-flask           exectue the flask-application as a flask-app via flask and --app
+        run-flask           execute the flask-application as a flask-app via flask and --app
         test                run unit-tests of the application via pytest
         class-diagram       generate class-diagrams of the application via pyreverse (output as plantuml)
         db-create           generate the database schema based on the code-first approach through SqlAlchemy
@@ -160,32 +160,21 @@ There is **NO** one/correct approach on how to structure an application. The mai
 ```
 
 ## 5. Testing
-After a fresh clone of the application some additional steps need to be performed to enable the tests to run successfully. 
-
-1. copy the file `./src/.env-example` to `./src/.env`
-2. create the database with `./cli.ps1 db-create`
-3. import initial data with `./cli.ps1 db-import`
-
-The reason for this is 1) Flask needs some environment configuration settings which can be provided by environment variables. The `.env` file contains relevant variables to setup Flask.
-
-For 2) and 3) The UI-/view-tests rely on the availability of the database. Therefor it needs to be available and the tables need to be created.
-Again the UI-/view-tests validate some data; this needs to be available and therefor the database needs to be filled with initial data.
-
-If the steps above are executed, the result of `./cli.ps1 test` is as follows:
+Tests including coverage-information are performed by invoking the command `./cli.ps1 test` with the following typical output. The example projects opts to put the unit-test files next to the actual logic files and not separate the test-files in a folder calls `test`. Moving the test-files away to a dedicated `test` folder is perfectly OK and is often seen.
 
 ```
 configfile: pyproject.toml
 plugins: cov-5.0.0, typeguard-4.0.1
 collected 13 items
 
-src/restaurant_app/infrastructure/memory_cache_test.py ..                                                                       [ 15%]
-src/restaurant_app/reservation/service_test.py .                                                                                [ 23%]
-src/restaurant_app/restaurant/service_test.py .                                                                                 [ 30%]
-src/restaurant_app/restaurant/views_test.py ....                                                                                [ 61%]
-src/restaurant_app/store/menu_repository_test.py .                                                                              [ 69%]
-src/restaurant_app/store/reservation_repo_test.py ..                                                                            [ 84%]
-src/restaurant_app/store/restaurant_repository_test.py .                                                                        [ 92%]
-src/restaurant_app/store/table_repository_test.py .                                                                             [100%]
+src/restaurant_app/infrastructure/memory_cache_test.py ..    [ 15%]
+src/restaurant_app/reservation/service_test.py .             [ 23%]
+src/restaurant_app/restaurant/service_test.py .              [ 30%]
+src/restaurant_app/restaurant/views_test.py ....             [ 61%]
+src/restaurant_app/store/menu_repository_test.py .           [ 69%]
+src/restaurant_app/store/reservation_repo_test.py ..         [ 84%]
+src/restaurant_app/store/restaurant_repository_test.py .     [ 92%]
+src/restaurant_app/store/table_repository_test.py .          [100%]
 ```
 
 

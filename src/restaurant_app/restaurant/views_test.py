@@ -1,14 +1,26 @@
+import datetime
+import os
+
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient
+from sqlalchemy.orm import Session
 
 from restaurant_app import create_app
 
 from ..shared.view_helpers import get_hash_value
+from ..store.entities import AddressEntity, RestaurantEntity
+from ..store.restaurant_repository import RestaurantRepository
 
 
 @pytest.fixture()
 def app() -> Flask:  # type: ignore
+    # overwrite config-values via environment
+    # use sqlite database in memory
+    os.environ["DATABASE_URI"] = "sqlite://"
+    # define a test-secret
+    os.environ["SECRET_KEY"] = "very-secret"
+
     app = create_app()
     app.config.update(
         {
@@ -17,6 +29,26 @@ def app() -> Flask:  # type: ignore
     )
 
     # other setup can go here
+
+    # initialize the database for the tests
+    db = app.container.db()
+    db.drop_database()
+    db.create_database()
+
+    # fill the database with some defined values - start with the restaurant
+    restaurant_repo = RestaurantRepository(db.managed_session)
+
+    def in_transaction(session: Session):
+        repo = restaurant_repo.new_session(session)
+        repo.save(RestaurantEntity(
+            name="Restaurant-Test-Name",
+            open_from=datetime.time(10, 0, 0),
+            open_until=datetime.time(22, 0, 0),
+            open_days="TUESDAY;WEDNESDAY",
+            address=AddressEntity(street="Teststrasse 1", city="Salzburg", zip="5020", country="AT")
+        ))
+
+    restaurant_repo.unit_of_work(in_transaction)
 
     yield app
 
@@ -65,7 +97,7 @@ def test_restaurant_list(client: FlaskClient):
         response = client.get("/restaurants")
         assert response.status_code == 200
         assert "List of restaurants" in response.text
-        assert "The Restaurant Name" in response.text
+        assert "Restaurant-Test-Name" in response.text
 
 
 def test_restaurant_edit(client: FlaskClient):
