@@ -9,10 +9,6 @@ import yaml
 
 class Config(yaml.YAMLObject):
 
-    # provide the database uri as an "global variable" for later user
-    DATABASE_URI = ""
-    DATABASE_ECHO = False
-
     def __init__(self):
         self.SECRET_KEY = ""
         self.FLASK_ENV = ""
@@ -27,12 +23,17 @@ class Config(yaml.YAMLObject):
                 continue
             if m in data_map:
                 setattr(self, m, data_map[m])
+                # all of the defined instance variables will be available as class attributes as well
+                # after having loaded the configuration the class can be used with the initialized
+                # attributes. this is a bit strange, but it works with the dynamic nature of python
+                setattr(Config, m, data_map[m])
 
             # overwrite by environment-vars if available
             # note: earlier we have used dotenv to load specific environment variables from an .env file
             env_var = os.getenv(m)
             if env_var is not None and not env_var == "":
                 setattr(self, m, env_var)
+                setattr(Config, m, env_var)
 
 
 def setup_config(base_path, app_environment) -> Config:

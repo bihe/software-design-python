@@ -1,0 +1,28 @@
+<div class="container" id="reservation_form">
+  <h5>Create a reservation</h5>
+  {% from "_formhelpers.html" import render_field %}
+    <form class="row g-3" novalidate action="{{ url_for('reservation.save')}}" method="POST">
+      {{ form.restaurant_id }}
+      {{ form.h }}
+      <div class="col-md-4">
+        {{ render_field(form.name) }}
+      </div>
+      <div class="col-md-4">
+        {{ render_field(form.num_people) }}
+      </div>
+      <div class="col-md-4">
+        {{ render_field(form.reservation_date) }}
+      </div>
+      <div class="col-md-6">
+        {{ render_field(form.time_from) }}
+      </div>
+      <div class="col-md-6">
+        {{ render_field(form.time_until) }}
+      </div>
+
+      <div class="col-12">
+        <button type="button" class="btn btn-secondary" hx-get="{{ url_for('reservation.partial_reservations', restaurant_id=form.restaurant_id.data) }}" hx-target="#reservation_form">Cancel</a>
+        <button type="submit" class="btn btn-primary float-end">Reserve</button>
+      </div>
+    </form>
+</div>

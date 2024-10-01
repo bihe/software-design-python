@@ -39,6 +39,7 @@ class WeekDay(enum.StrEnum):
 @dataclass
 class RestaurantModel:
     id: int
+    id_hash: str
     name: str
     open_days: List[WeekDay]
     open_from: List[int]

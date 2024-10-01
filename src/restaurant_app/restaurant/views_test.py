@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from restaurant_app import create_app
 
-from ..shared.view_helpers import get_hash_value
+from ..shared.hash import get_hash_value
 from ..store.entities import AddressEntity, RestaurantEntity
 from ..store.restaurant_repository import RestaurantRepository
 

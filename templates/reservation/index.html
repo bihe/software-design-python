@@ -7,7 +7,7 @@
 {% block content %}
   <h5>Select the restaurant to view reservations</h5>
   <div>
-    <select name="restaurant_id" class="form-select" hx-get="/reservation/partial/~reservations" hx-target="#reservations" hx-indicator=".htmx-indicator">
+    <select name="restaurant_id" class="form-select" hx-get="{{ url_for('reservation.partial_reservations')}}" hx-target="#reservations" hx-indicator="#indicator">
       <option value="" selected>select a restaurant</option>
       {% for r in restaurants %}
       <option value="{{ r.id }}">{{ r.name }}</option>

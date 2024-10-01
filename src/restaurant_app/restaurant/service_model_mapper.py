@@ -1,6 +1,7 @@
 from datetime import time
 from typing import List
 
+from ..shared.hash import get_hash_value
 from ..store.entities import RestaurantEntity
 from .models import AddressModel, MenuModel, RestaurantModel, TableModel, WeekDay
 
@@ -46,6 +47,7 @@ def mapEntityToModel(res: RestaurantEntity) -> RestaurantModel:
 
     restaurant_model = RestaurantModel(
         id=res.id,
+        id_hash=get_hash_value(str(res.id)),
         address=AddressModel(
             street=res.address.street,
             zip=res.address.zip,

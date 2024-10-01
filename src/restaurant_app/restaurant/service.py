@@ -3,20 +3,13 @@ import datetime
 from datetime import time
 from typing import List
 
+from ..shared.errors import NotFoundError
 from ..store.entities import AddressEntity, MenuEntity, RestaurantEntity, TableEntity
 from ..store.menu_repository import MenuRepository
 from ..store.restaurant_repository import RestaurantRepository
 from ..store.table_repository import TableRepository
 from .models import RestaurantModel
 from .service_model_mapper import mapDayFromEnum, mapEntityToModel
-
-
-class NotFoundError(Exception):
-    """An entry cannot be found error"""
-
-    def __init__(self, message):
-        self.message = message
-        super().__init__(self.message)
 
 
 class RestaurantService:

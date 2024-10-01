@@ -4,10 +4,11 @@ from os import path
 from flask import Flask, redirect, url_for
 
 from .cli.database import db_cli
-from .infrastructure.config import Config, setup_config
+from .infrastructure.config import setup_config
 from .infrastructure.environment import setup_environment
 from .infrastructure.logger import LOG, setup_logging
-from .shared.view_helpers import BadRequestHashError, NotFoundError, UserCacheMissError
+from .shared.errors import BadRequestHashError, NotFoundError
+from .shared.view_helpers import UserCacheMissError
 
 
 def handle_user_cache_miss(e: Exception):
@@ -41,10 +42,6 @@ def create_app():
 
     # add the logic to enable cli commands
     app.cli.add_command(db_cli)
-
-    # set database settings as a globally available variables
-    Config.DATABASE_URI = config.DATABASE_URI
-    Config.DATABASE_ECHO = config.DATABASE_ECHO
 
     # dependency injection
     # this import is not used on the "top" level because

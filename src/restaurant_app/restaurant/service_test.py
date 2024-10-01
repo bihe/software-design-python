@@ -1,6 +1,7 @@
 import datetime
 from unittest import mock
 
+from ..infrastructure.config import Config
 from ..store.menu_repository import MenuRepository
 from ..store.repository_test_helpers import create_restaurant_data
 from ..store.restaurant_repository import RestaurantRepository
@@ -13,6 +14,8 @@ def test_restaurant_open():
     restaurant_repo_mock.get_restaurant_by_id.return_value = create_restaurant_data()
     menu_repo_mock = mock.Mock(spec=MenuRepository)
     table_repo_mock = mock.Mock(spec=TableRepository)
+    # load the configuration to be able to access the settings as class attributes
+    _ = Config().load_from_data({"SECRET_KEY": "very-secret"})
 
     svc = RestaurantService(restaurant_repo_mock, menu_repo_mock, table_repo_mock)
     # the date 2024-09-16 is a Monday

@@ -8,7 +8,9 @@ from ..auth.views import login_required
 from ..infrastructure.cache import Cache
 from ..infrastructure.container import Container
 from ..infrastructure.logger import LOG
-from ..shared.view_helpers import NotFoundError, get_hash_value, prepare_view_model, valid_hash, valid_hash_supplied
+from ..shared.errors import NotFoundError
+from ..shared.hash import valid_hash, valid_hash_supplied
+from ..shared.view_helpers import prepare_view_model
 from .forms import RestaurantForm
 from .models import AddressModel, RestaurantModel, WeekDay
 from .service import RestaurantService
@@ -25,8 +27,6 @@ def index(
     LOG.info("view restaurant/index")
     restaurants = restaurant_svc.get_all()
     LOG.debug(f"get {len(restaurants)} restaurants")
-    for r in restaurants:
-        r.id_hash = get_hash_value(str(r.id))
     model_params = prepare_view_model(cache, restaurants=restaurants)
     return render_template("restaurant/index.html", **model_params)
 
@@ -54,7 +54,7 @@ def restaurant(
         form = RestaurantForm(
             data={
                 "id": restaurant.id,
-                "h": get_hash_value(str(restaurant.id)),
+                "h": restaurant.id_hash,
                 "name": restaurant.name,
                 "street": restaurant.address.street,
                 "city": restaurant.address.city,
@@ -93,6 +93,7 @@ def restaurant(
                 open_days.append(WeekDay.SUNDAY)
             restaurant = RestaurantModel(
                 id=int(form.id.data),
+                id_hash=request.form["h"],
                 name=form.name.data,
                 open_from=[form.open_from.data.hour, form.open_from.data.minute],
                 open_until=[form.open_until.data.hour, form.open_until.data.minute],
