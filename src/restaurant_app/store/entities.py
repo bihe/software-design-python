@@ -119,7 +119,7 @@ class ReservationEntity(BaseEntity):
     reservation_number: Mapped[str] = mapped_column("reservation_number", String(10), unique=True)
 
     tables: Mapped[List["TableEntity"]] = relationship(
-        secondary=relation_table_reservation, back_populates="reservations"
+        secondary=relation_table_reservation, back_populates="reservations", lazy="joined"
     )
 
 

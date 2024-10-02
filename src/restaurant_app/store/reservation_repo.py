@@ -62,6 +62,7 @@ class ReservationRepository(BaseRepository):
                 session.query(ReservationEntity)
                 .join(TableEntity, ReservationEntity.tables)
                 .where(TableEntity.restaurant_id == restaurant_id)
+                .order_by(ReservationEntity.reservation_date.asc())
                 .order_by(ReservationEntity.time_from.asc())
                 .order_by(TableEntity.table_number)
                 .all()

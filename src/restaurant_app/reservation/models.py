@@ -24,3 +24,9 @@ class ReservationModel:
     time_until: datetime.time
     reservation_date: datetime.date
     reserved_table: TableModel
+
+    def date_format(self) -> str:
+        return self.reservation_date.strftime("%Y-%m-%d")
+
+    def reservation_time_format(self) -> str:
+        return f"{self.time_from.strftime("%H:%M")} - {self.time_until.strftime("%H:%M")}"

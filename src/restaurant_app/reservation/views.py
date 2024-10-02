@@ -10,7 +10,8 @@ from ..restaurant.service import RestaurantService
 from ..shared.hash import valid_hash_supplied
 from ..shared.view_helpers import get_restaurants_from_cache, prepare_view_model, put_restaurants_to_cache
 from .forms import ReservationForm
-from .service import ReservationService
+from .models import ReservationRequestModel
+from .service import ReservationError, ReservationService
 
 bp = Blueprint("reservation", __name__)
 
@@ -70,10 +71,43 @@ def partial_reservation_form(
     return render_template("reservation/partial/reservation_form.html", restaurant=restaurant, form=form)
 
 
-@bp.get("/reservation/partial/~reservation-save")
+@bp.post("/reservation/partial/~reservation-save")
 @login_required
 @inject
 def save(
     reservation_svc: ReservationService = Provide[Container.reservation_svc], cache: Cache = Provide[Container.cache]
 ):
-    return ""
+    restaurant_id = request.form["restaurant_id"]
+    restaurant_id_hash = request.form["h"]
+    valid_hash_supplied(restaurant_id, restaurant_id_hash)
+    restaurant = restaurant_from_cache(cache, int(restaurant_id))
+
+    form: ReservationForm = ReservationForm(request.form)
+    if not form.validate():
+        # some of the model-validation did not work out, show the form again!
+        return render_template("reservation/partial/reservation_form.html", restaurant=restaurant, form=form)
+
+    try:
+        reservation = reservation_svc.reserve(
+            ReservationRequestModel(
+                restaurant_id=int(restaurant_id),
+                name=form.name.data,
+                num_people=form.num_people.data,
+                time_from=form.time_from.data,
+                time_until=form.time_until.data,
+                reservation_date=form.reservation_date.data,
+            )
+        )
+    except ReservationError as res_error:
+        LOG.info(f"could not place a reservation '{res_error}'")
+        # show the form again and display the reason for not being able to place reservation
+        return render_template(
+            "reservation/partial/reservation_form.html", restaurant=restaurant, form=form, reservation_error=res_error
+        )
+
+    LOG.info(f"create a reservation for '{reservation.name}' on the '{reservation.reservation_date}'")
+
+    # fetch the reservations again
+    reservations = reservation_svc.get_reservation_for_restaurant(restaurant_id)
+    LOG.debug(f"got {len(reservations)} reservations")
+    return render_template("reservation/partial/reservation.html", reservations=reservations, restaurant=restaurant)

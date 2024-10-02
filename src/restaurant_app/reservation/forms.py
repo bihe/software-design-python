@@ -35,4 +35,4 @@ class ReservationForm(Form):
         "Time until",
         [validators.DataRequired(), Gt("time_from", message="'Time until' needs to be after 'Time from'")],
     )
-    reservation_date = DateField("Reservation date", [validators.DataRequired()])
+    reservation_date = DateField("Reservation date", [validators.DataRequired(), date_current_or_future])

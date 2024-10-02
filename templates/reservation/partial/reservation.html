@@ -1,26 +1,54 @@
-
-{% if reservations|length == 0 %}
-<br/>
-
-
-<div id="reservation-content" class="row">
-  <div class="col-3"></div>
-  <div class="col-6 text-center">
-
-    <div class="alert alert-primary" role="alert">
-      Currently no reservations available for restaurant '{{ restaurant.name }}'
+<div id="reservation-content" class="reservation_list">
+  <div col="row">
+    <div class="col align-self-end">
+      <button type="button" class="btn btn-outline-primary btn-lg float-end"
+      hx-get="{{ url_for('reservation.partial_reservation_form', restaurant_id=restaurant.id, h=restaurant.id_hash) }}"
+      hx-target="#reservation-content" hx-swap="outerHTML"><i class="bi bi-egg-fried"></i> Create Reservation</button>
     </div>
-
-    <button type="button" class="btn btn-outline-primary btn-lg" hx-get="{{ url_for('reservation.partial_reservation_form', restaurant_id=restaurant.id, h=restaurant.id_hash) }}" hx-target="#reservation-content"><i class="bi bi-egg-fried"></i> Create Reservation</button>
-
   </div>
-  <div class="col-3"></div>
 
+  <div class="row">
 
-{% else %}
+    <div class="col-3"></div>
+    <div class="col-6 text-center">
 
-  {% for r in reservations %}
-    <strong>{{ r.number }} / {{ r.name }}</strong>
-  {% endfor %}
+      {% if reservations|length == 0 %}
 
-{% endif %}
+        <div class="alert alert-primary" role="alert">
+          Currently no reservations available for restaurant '{{ restaurant.name }}'
+        </div>
+
+      {% else %}
+
+      <table class="table table-bordered table-hover" id="reservation_list">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Date</th>
+            <th scope="col">Name</th>
+            <th scope="col">Guests</th>
+            <th scope="col">Time</th>
+            <th scope="col">Table</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reservations %}
+          <tr>
+            <th scope="row">{{ r.number }}</th>
+            <td>{{ r.date_format() }}</td>
+            <td>{{ r.name }}</td>
+            <td>{{ r.num_people }}</td>
+            <td>{{ r.reservation_time_format() }}</td>
+            <td>{{ r.reserved_table.number }} ({{ r.reserved_table.places }})</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% endif %}
+
+    </div>
+    <div class="col-3"></div>
+  </div>
+
+</div>

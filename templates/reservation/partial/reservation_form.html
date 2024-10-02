@@ -1,7 +1,15 @@
-<div class="container" id="reservation_form">
+<div class="container reservation_form" id="reservation_form">
   <h5>Create a reservation</h5>
+
+  {% if reservation_error %}
+    <div class="alert alert-danger" role="alert">
+      <i class="bi bi-exclamation-octagon"></i> Unfortunately the reservation could not be created: <strong>{{ reservation_error }}</strong>
+    </div>
+    {% endif %}
+
+
   {% from "_formhelpers.html" import render_field %}
-    <form class="row g-3" novalidate action="{{ url_for('reservation.save')}}" method="POST">
+    <form class="row g-3" novalidate >
       {{ form.restaurant_id }}
       {{ form.h }}
       <div class="col-md-4">
@@ -21,8 +29,14 @@
       </div>
 
       <div class="col-12">
-        <button type="button" class="btn btn-secondary" hx-get="{{ url_for('reservation.partial_reservations', restaurant_id=form.restaurant_id.data) }}" hx-target="#reservation_form">Cancel</a>
-        <button type="submit" class="btn btn-primary float-end">Reserve</button>
+        <button type="button" class="btn btn-secondary"
+          hx-get="{{ url_for('reservation.partial_reservations', restaurant_id=form.restaurant_id.data) }}"
+          hx-target="#reservation_form"
+          hx-swap="outerHTML">Cancel</a>
+        <button type="button" class="btn btn-primary float-end"
+          hx-post="{{ url_for('reservation.save')}}"
+          hx-target="#reservation_form"
+          hx-swap="outerHTML">Reserve</button>
       </div>
     </form>
 </div>
