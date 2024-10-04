@@ -91,6 +91,7 @@ def import_from_json(filename: str):
     # map to RestaurantModel
     restaurant_model = RestaurantModel(
         id=None,
+        id_hash="",
         address=None,
         menus=None,
         tables=None,
