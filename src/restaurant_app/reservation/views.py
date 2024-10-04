@@ -111,3 +111,25 @@ def save(
     reservations = reservation_svc.get_reservation_for_restaurant(restaurant_id)
     LOG.debug(f"got {len(reservations)} reservations")
     return render_template("reservation/partial/reservation.html", reservations=reservations, restaurant=restaurant)
+
+
+@bp.delete("/reservation/partial/<restaurant_id>/<reservation_id>")
+@login_required
+@inject
+def delete(
+    restaurant_id: int,
+    reservation_id: int,
+    reservation_svc: ReservationService = Provide[Container.reservation_svc],
+    cache: Cache = Provide[Container.cache],
+):
+    restaurant = restaurant_from_cache(cache, int(restaurant_id))
+
+    try:
+        reservation_svc.delete(reservation_id)
+    except Exception as e:
+        LOG.error(f"could not delete reservation '{e}'")
+
+    # fetch the changed reservations
+    reservations = reservation_svc.get_reservation_for_restaurant(restaurant_id)
+    LOG.debug(f"got {len(reservations)} reservations")
+    return render_template("reservation/partial/reservation.html", reservations=reservations, restaurant=restaurant)

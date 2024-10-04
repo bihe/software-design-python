@@ -1,0 +1,30 @@
+<table class="table table-bordered table-hover" id="reservation_list">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Date</th>
+      <th scope="col">Name</th>
+      <th scope="col">Guests</th>
+      <th scope="col">Time</th>
+      <th scope="col">Table</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in reservations %}
+    <tr>
+      <th scope="row">{{ r.number }}</th>
+      <td>{{ r.date_format() }}</td>
+      <td>{{ r.name }}</td>
+      <td>{{ r.num_people }}</td>
+      <td>{{ r.reservation_time_format() }}</td>
+      <td>{{ r.reserved_table.number }} ({{ r.reserved_table.places }})</td>
+      <td><a href="#"
+          hx-delete="{{ url_for('reservation.delete', restaurant_id=restaurant.id, reservation_id=r.id) }}"
+          hx-target="#reservation-content"
+          hx-swap="outerHTML"
+          hx-confirm="Are you sure you want to delete the reservation?"><i class="bi bi-trash"></i></a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

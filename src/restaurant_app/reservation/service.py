@@ -3,6 +3,7 @@ from typing import List
 
 from ..restaurant.models import TableModel
 from ..restaurant.service import RestaurantService
+from ..shared.errors import NotFoundError
 from ..shared.random import random_with_N_digits
 from ..store.entities import ReservationEntity, TableEntity
 from ..store.reservation_repo import ReservationRepository
@@ -51,6 +52,20 @@ class ReservationService:
         for res in reservations:
             reservation_model.append(mapEntityToModel(res))
         return reservation_model
+
+    def delete(self, reservation_id: int):
+        """
+        Delete the reservation by the given id
+        """
+        restaurant = self._reservation_repo.get_reservation_by_id(reservation_id)
+        if restaurant is None:
+            raise NotFoundError(f"could not get reservation by id '{reservation_id}'")
+
+        def work_in_transaction(session):
+            repo = self._reservation_repo.new_session(session)
+            repo.delete(reservation_id)
+
+        self._reservation_repo.unit_of_work(work_in_transaction)
 
     def reserve(self, request: ReservationRequestModel) -> ReservationModel:
         """Provide a request for a reservation date/time/number-of-people/name.

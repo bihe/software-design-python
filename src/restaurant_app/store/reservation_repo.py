@@ -52,6 +52,12 @@ class ReservationRepository(BaseRepository):
             session.flush()
         return reservation
 
+    def delete(self, reservation_id: int):
+        with self.get_session() as session:
+            reservation = session.get(ReservationEntity, reservation_id)
+            if reservation is not None:
+                session.delete(reservation)
+
     def get_reservation_by_id(self, id: int) -> ReservationEntity:
         with self.get_session() as session:
             return session.get(ReservationEntity, id)
@@ -84,7 +90,7 @@ class ReservationRepository(BaseRepository):
             return True
 
     def get_table_reservations_for_date(self, date: datetime.date, table_id: int) -> List[ReservationEntity]:
-        """determine if there is a reservatiion for the given date/time and the table"""
+        """determine if there is a reservation for the given date/time and the table"""
         with self.get_session() as session:
             table_alias = aliased(TableEntity)
 

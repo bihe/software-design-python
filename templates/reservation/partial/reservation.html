@@ -20,30 +20,7 @@
 
       {% else %}
 
-      <table class="table table-bordered table-hover" id="reservation_list">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Date</th>
-            <th scope="col">Name</th>
-            <th scope="col">Guests</th>
-            <th scope="col">Time</th>
-            <th scope="col">Table</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for r in reservations %}
-          <tr>
-            <th scope="row">{{ r.number }}</th>
-            <td>{{ r.date_format() }}</td>
-            <td>{{ r.name }}</td>
-            <td>{{ r.num_people }}</td>
-            <td>{{ r.reservation_time_format() }}</td>
-            <td>{{ r.reserved_table.number }} ({{ r.reserved_table.places }})</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        {% include "reservation/partial/component_reservation_table.html" %}
 
       {% endif %}
 
