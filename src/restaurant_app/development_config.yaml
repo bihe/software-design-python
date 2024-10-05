@@ -3,6 +3,7 @@ FLASK_ENV: "development"
 FLASK_DEBUG: 1
 DEBUG: true
 TESTING: true
+SECRET_KEY: very-secret-key
 
 # database settings
 DATABASE_URI: "sqlite:///app.db"
