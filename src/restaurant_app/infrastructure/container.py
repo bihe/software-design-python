@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 
 from ..reservation.service import ReservationService
 from ..restaurant.service import RestaurantService
-from ..store.database import SqlAlchemyDatbase
+from ..store.database import SqlAlchemyDatabase
 from ..store.menu_repository import MenuRepository
 from ..store.reservation_repo import ReservationRepository
 from ..store.restaurant_repository import RestaurantRepository
@@ -19,7 +19,7 @@ class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
         packages=[__name__, "..restaurant.views", "..auth.views", "..reservation.views"]
     )
-    db = providers.Singleton(SqlAlchemyDatbase, db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
+    db = providers.Singleton(SqlAlchemyDatabase, db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
 
     # define the factories for the repositories
     restaurant_repo = providers.Factory(RestaurantRepository, session_factory=db.provided.managed_session)

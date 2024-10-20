@@ -37,6 +37,14 @@ class TableRepository(BaseRepository):
                 tables = []
             return tables
 
+    def delete(self, id: int):
+        with self.get_session() as session:
+            table = session.get(TableEntity, id)
+            if table is None:
+                return
+            session.delete(table)
+            session.flush()
+
     def save(self, table: TableEntity) -> TableEntity:
         with self.get_session() as session:
             table_id = table.id or 0
@@ -44,8 +52,9 @@ class TableRepository(BaseRepository):
                 existing = session.get(TableEntity, table_id)
                 if existing is not None:
                     existing.table_number = table.table_number
-                    existing.retaurant = table.restaurant
+                    existing.restaurant = table.restaurant
                     session.add(existing)
+                    session.flush()
                     return existing
             else:
                 # lookup the table by its number
@@ -56,8 +65,11 @@ class TableRepository(BaseRepository):
                     .first()
                 )
                 if existing is not None:
+                    existing.seats = table.seats
                     existing.table_number = table.table_number
+                    existing.restaurant = table.restaurant
                     session.add(existing)
+                    session.flush()
                     return existing
 
             # new or not found

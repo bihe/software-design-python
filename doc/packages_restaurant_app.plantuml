@@ -20,11 +20,17 @@ package "restaurant_app.infrastructure.memory_cache_test" as restaurant_app.infr
 }
 package "restaurant_app.reservation" as restaurant_app.reservation #44BB99 {
 }
+package "restaurant_app.reservation.forms" as restaurant_app.reservation.forms #44BB99 {
+}
 package "restaurant_app.reservation.models" as restaurant_app.reservation.models #44BB99 {
 }
 package "restaurant_app.reservation.service" as restaurant_app.reservation.service #44BB99 {
 }
+package "restaurant_app.reservation.service_model_mapper" as restaurant_app.reservation.service_model_mapper #44BB99 {
+}
 package "restaurant_app.reservation.service_test" as restaurant_app.reservation.service_test #44BB99 {
+}
+package "restaurant_app.reservation.views" as restaurant_app.reservation.views #44BB99 {
 }
 package "restaurant_app.restaurant" as restaurant_app.restaurant #BBCC33 {
 }
@@ -39,6 +45,8 @@ package "restaurant_app.restaurant.service_model_mapper" as restaurant_app.resta
 package "restaurant_app.restaurant.service_test" as restaurant_app.restaurant.service_test #BBCC33 {
 }
 package "restaurant_app.restaurant.views" as restaurant_app.restaurant.views #BBCC33 {
+}
+package "restaurant_app.restaurant.views_test" as restaurant_app.restaurant.views_test #BBCC33 {
 }
 package "restaurant_app.store" as restaurant_app.store #AAAA00 {
 }
@@ -70,14 +78,20 @@ restaurant_app --> restaurant_app.infrastructure.config
 restaurant_app --> restaurant_app.infrastructure.container
 restaurant_app --> restaurant_app.infrastructure.environment
 restaurant_app --> restaurant_app.infrastructure.logger
+restaurant_app --> restaurant_app.reservation
 restaurant_app --> restaurant_app.restaurant
 restaurant_app.infrastructure.container --> restaurant_app.infrastructure.config
 restaurant_app.infrastructure.container --> restaurant_app.infrastructure.memory_cache
 restaurant_app.infrastructure.memory_cache --> restaurant_app.infrastructure.cache
 restaurant_app.infrastructure.memory_cache_test --> restaurant_app.infrastructure.memory_cache
 restaurant_app.reservation.service --> restaurant_app.reservation.models
+restaurant_app.reservation.service --> restaurant_app.reservation.service_model_mapper
+restaurant_app.reservation.service_model_mapper --> restaurant_app.reservation.models
 restaurant_app.reservation.service_test --> restaurant_app.reservation.models
 restaurant_app.reservation.service_test --> restaurant_app.reservation.service
+restaurant_app.reservation.views --> restaurant_app.reservation.forms
+restaurant_app.reservation.views --> restaurant_app.reservation.models
+restaurant_app.reservation.views --> restaurant_app.reservation.service
 restaurant_app.restaurant.service --> restaurant_app.restaurant.models
 restaurant_app.restaurant.service --> restaurant_app.restaurant.service_model_mapper
 restaurant_app.restaurant.service_model_mapper --> restaurant_app.restaurant.models
@@ -85,6 +99,7 @@ restaurant_app.restaurant.service_test --> restaurant_app.restaurant.service
 restaurant_app.restaurant.views --> restaurant_app.restaurant.forms
 restaurant_app.restaurant.views --> restaurant_app.restaurant.models
 restaurant_app.restaurant.views --> restaurant_app.restaurant.service
+restaurant_app.restaurant.views_test --> restaurant_app
 restaurant_app.store.entities --> restaurant_app.store.database
 restaurant_app.store.menu_repository --> restaurant_app.store.base_repository
 restaurant_app.store.menu_repository --> restaurant_app.store.entities

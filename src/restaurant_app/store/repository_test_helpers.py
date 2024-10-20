@@ -1,6 +1,6 @@
 from datetime import time
 
-from .database import SqlAlchemyDatbase
+from .database import SqlAlchemyDatabase
 from .entities import AddressEntity, RestaurantEntity
 
 
@@ -16,7 +16,7 @@ def create_restaurant_data() -> RestaurantEntity:
     return res
 
 
-def get_database():
-    db = SqlAlchemyDatbase("sqlite://", False)
+def get_database(auto_commit=False):
+    db = SqlAlchemyDatabase("sqlite://", auto_commit=auto_commit)
     db.create_database()
     return db

@@ -42,18 +42,12 @@ class "Container" as restaurant_app.infrastructure.container.Container #99DDFF {
   cache
   db
   menu_repo
+  reservation_repo
+  reservation_svc
   restaurant_repo
   restaurant_svc
   table_repo
   wiring_config
-}
-class "Gt" as restaurant_app.restaurant.forms.Gt #BBCC33 {
-  fieldname
-  message : NoneType
-}
-class "Lt" as restaurant_app.restaurant.forms.Lt #BBCC33 {
-  fieldname
-  message : NoneType
 }
 class "MemoryCache" as restaurant_app.infrastructure.memory_cache.MemoryCache #99DDFF {
   delete(key: str)
@@ -80,9 +74,6 @@ class "MenuRepository" as restaurant_app.store.menu_repository.MenuRepository #A
   new_session(session: Session) -> Self
   save(menu: MenuEntity) -> MenuEntity
 }
-class "<color:red>NotFoundError</color>" as restaurant_app.restaurant.service.NotFoundError #BBCC33 {
-  message
-}
 class "OrderEntity" as restaurant_app.store.entities.OrderEntity #AAAA00 {
   menus : Mapped[List['MenuEntity']]
   table : Mapped['TableEntity']
@@ -102,6 +93,15 @@ class "ReservationEntity" as restaurant_app.store.entities.ReservationEntity #AA
 class "<color:red>ReservationError</color>" as restaurant_app.reservation.service.ReservationError #44BB99 {
   message
 }
+class "ReservationForm" as restaurant_app.reservation.forms.ReservationForm #44BB99 {
+  h : HiddenField
+  name : StringField
+  num_people : IntegerField
+  reservation_date : DateField
+  restaurant_id : HiddenField
+  time_from : TimeField
+  time_until : TimeField
+}
 class "ReservationModel" as restaurant_app.reservation.models.ReservationModel #44BB99 {
   id : int
   name : str
@@ -111,10 +111,14 @@ class "ReservationModel" as restaurant_app.reservation.models.ReservationModel #
   reserved_table
   time_from : time
   time_until : time
+  date_format() -> str
+  reservation_time_format() -> str
 }
 class "ReservationRepository" as restaurant_app.store.reservation_repo.ReservationRepository #AAAA00 {
+  delete(reservation_id: int)
   get_reservation_by_id(id: int) -> ReservationEntity
   get_reservation_by_number(number: int) -> ReservationEntity
+  get_reservation_for_restaurant(restaurant_id: int) -> ReservationEntity
   get_table_reservations_for_date(date: datetime.date, table_id: int) -> List[ReservationEntity]
   is_reservation_number_in_use(number: str) -> bool
   new_session(session: Session) -> Self
@@ -129,6 +133,8 @@ class "ReservationRequestModel" as restaurant_app.reservation.models.Reservation
   time_until : time
 }
 class "ReservationService" as restaurant_app.reservation.service.ReservationService #44BB99 {
+  delete(reservation_id: int)
+  get_reservation_for_restaurant(restaurant_id: int) -> List[ReservationModel]
   reserve(request: ReservationRequestModel) -> ReservationModel
 }
 class "RestaurantEntity" as restaurant_app.store.entities.RestaurantEntity #AAAA00 {
@@ -162,6 +168,7 @@ class "RestaurantForm" as restaurant_app.restaurant.forms.RestaurantForm #BBCC33
 class "RestaurantModel" as restaurant_app.restaurant.models.RestaurantModel #BBCC33 {
   address
   id : int
+  id_hash : str
   menus : List[MenuModel]
   name : str
   open_days : List[WeekDay]
@@ -189,7 +196,7 @@ class "RestaurantService" as restaurant_app.restaurant.service.RestaurantService
 }
 class "SessionContextManager" as restaurant_app.store.base_repository.SessionContextManager #AAAA00 {
 }
-class "SqlAlchemyDatbase" as restaurant_app.store.database.SqlAlchemyDatbase #AAAA00 {
+class "SqlAlchemyDatabase" as restaurant_app.store.database.SqlAlchemyDatabase #AAAA00 {
   create_database() -> None
   drop_database() -> None
   managed_session() -> Callable[..., AbstractContextManager[Session]]

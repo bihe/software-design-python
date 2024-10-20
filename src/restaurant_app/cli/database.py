@@ -12,7 +12,7 @@ from marshmallow_dataclass import dataclass
 from ..infrastructure.config import Config
 from ..restaurant.models import AddressModel, MenuModel, RestaurantModel, TableModel, WeekDay
 from ..restaurant.service import RestaurantService
-from ..store.database import SqlAlchemyDatbase
+from ..store.database import SqlAlchemyDatabase
 from ..store.menu_repository import MenuRepository
 from ..store.restaurant_repository import RestaurantRepository
 from ..store.table_repository import TableRepository
@@ -122,7 +122,7 @@ def import_from_json(filename: str):
         tables.append(TableModel(id=None, places=table.places, number=table.number))
     restaurant_model.tables = tables
 
-    db = SqlAlchemyDatbase(db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
+    db = SqlAlchemyDatabase(db_url=Config.DATABASE_URI, echo=Config.DATABASE_ECHO)
     managed_session = db.managed_session
 
     svc: RestaurantService = RestaurantService(

@@ -119,6 +119,12 @@ class RestaurantService:
 
             # process the tables
             if restaurant.tables is not None:
+                existing_tables = table_repo.get_tables_for_restaurant(saved.id)
+                if existing_tables is not None and len(existing_tables) > 0:
+                    for table in existing_tables:
+                        table_repo.delete(table.id)
+                table_repo.sync()
+
                 for table in restaurant.tables:
                     table_repo.save(TableEntity(table_number=table.number, seats=table.places, restaurant=saved))
 
