@@ -8,7 +8,7 @@ mutex = threading.Lock()
 
 
 class MemoryCache(Cache):
-    """the MemoryCache is a very, very simple implemantation which stores value in a backing-dictionary"""
+    """the MemoryCache is a very, very simple implementation which stores value in a backing-dictionary"""
 
     def __init__(self):
         self._cache_store = {}

@@ -6,13 +6,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from ..infrastructure.cache import Cache
 from ..infrastructure.container import Container
 from ..infrastructure.logger import LOG
-from ..shared.view_helpers import (
-    clear_session,
-    delete_user_from_cache,
-    get_user_id_from_session,
-    put_user_to_cache,
-    set_user_id_to_session,
-)
+from ..shared.view_helpers import clear_session, get_user_from_session, set_user_to_session
 from .models import User
 
 bp = Blueprint("auth", __name__)
@@ -30,9 +24,8 @@ def show_login():
 def logout(cache: Cache = Provide[Container.cache]):
     """perform a logout and redirect to the root URL"""
     LOG.info("view auth/logout")
-    user_id = get_user_id_from_session()
-    if user_id is not None:
-        delete_user_from_cache(cache, user_id)
+    user = get_user_from_session()
+    if user is not None:
         clear_session()
     return redirect("/")
 
@@ -52,8 +45,7 @@ def login(cache: Cache = Provide[Container.cache]):
 
     clear_session()
     user = User(id=1, display_name="Restaurant Admin", email=login_email)
-    set_user_id_to_session(user.id)
-    put_user_to_cache(cache, user)
+    set_user_to_session(user)
     return redirect("/")
 
 
@@ -62,8 +54,8 @@ def login_required(view):
 
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        user_id = get_user_id_from_session()
-        if user_id is not None:
+        user = get_user_from_session()
+        if user is not None:
             return view(**kwargs)
         return redirect(url_for("auth.show_login"))
 

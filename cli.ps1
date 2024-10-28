@@ -15,11 +15,12 @@ COMMANDS
     db-import           import initial data into the database vai ./data/initial_restaurant_data.json
     container-build     create container-image of the application
     container-run       run the application container
+    compose-run         start the deployment docker-compose
     help, -?            show this help message
 #>
 param(
   [Parameter(Position=0)]
-  [ValidateSet("run", "run-flask", "test", "class-diagram", "db-create", "db-import", "container-build", "container-run", "help")]
+  [ValidateSet("run", "run-flask", "test", "class-diagram", "db-create", "db-import", "container-build", "container-run", "compose-run", "help")]
   [string]$Command
 )
 
@@ -73,6 +74,11 @@ function Command-container-run {
     iex "docker stop restaurant-app || true && docker rm restaurant-app || true && docker run -p 9000:9000 --name restaurant-app restaurant_app"
 }
 
+function Command-compose-run {
+    Write-Host "  >  start docker-compose" -ForegroundColor Blue
+    iex "docker compose -f ./container/compose.yaml rm && docker compose -f ./container/compose.yaml up --build"
+}
+
 
 if (!$Command) {
     Command-Help
@@ -88,5 +94,6 @@ switch ($Command) {
     "db-import" { Command-db-import }
     "container-build" { Command-container-build }
     "container-run" { Command-container-run }
+    "compose-run" { Command-compose-run }
     "help"  { Command-Help }
 }

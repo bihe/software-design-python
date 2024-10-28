@@ -16,9 +16,16 @@ from .service import ReservationError, ReservationService
 bp = Blueprint("reservation", __name__)
 
 
-def restaurant_from_cache(cache: Cache, restaurant_id: int) -> RestaurantModel:
+def restaurant_from_cache(cache: Cache, restaurant_id: int, restaurant_svc: RestaurantService) -> RestaurantModel:
     restaurants = get_restaurants_from_cache(cache)
-    restaurant = next(filter(lambda x: x.id == restaurant_id, restaurants))
+    if restaurants is None or len(restaurants) == 0:
+        # reload restaurant from DB
+        restaurants = restaurant_svc.get_all()
+        if restaurants is not None and len(restaurants) > 0:
+            put_restaurants_to_cache(cache, restaurants)
+        restaurant = restaurant_svc.get_by_id(restaurant_id)
+    else:
+        restaurant = next(filter(lambda x: x.id == restaurant_id, restaurants))
     return restaurant
 
 
@@ -42,14 +49,16 @@ def index(
 @login_required
 @inject
 def partial_reservations(
-    reservation_svc: ReservationService = Provide[Container.reservation_svc], cache: Cache = Provide[Container.cache]
+    restaurant_svc: RestaurantService = Provide[Container.restaurant_svc],
+    reservation_svc: ReservationService = Provide[Container.reservation_svc],
+    cache: Cache = Provide[Container.cache],
 ):
     LOG.info("view reservation/partial_reservations")
     restaurant_id = request.args.get("restaurant_id", "")
     if restaurant_id is None or restaurant_id == "":
         return ""
 
-    restaurant = restaurant_from_cache(cache, int(restaurant_id))
+    restaurant = restaurant_from_cache(cache, int(restaurant_id), restaurant_svc)
     reservations = reservation_svc.get_reservation_for_restaurant(restaurant_id)
     LOG.debug(f"got {len(reservations)} reservations")
     return render_template("reservation/partial/reservation.html", reservations=reservations, restaurant=restaurant)
@@ -59,14 +68,14 @@ def partial_reservations(
 @login_required
 @inject
 def partial_reservation_form(
-    reservation_svc: ReservationService = Provide[Container.reservation_svc], cache: Cache = Provide[Container.cache]
+    restaurant_svc: RestaurantService = Provide[Container.restaurant_svc], cache: Cache = Provide[Container.cache]
 ):
     LOG.info("view reservation/partial_reservation_form")
     restaurant_id = request.args.get("restaurant_id", "")
     restaurant_id_hash = request.args.get("h", "")
     valid_hash_supplied(restaurant_id, restaurant_id_hash)
 
-    restaurant = restaurant_from_cache(cache, int(restaurant_id))
+    restaurant = restaurant_from_cache(cache, int(restaurant_id), restaurant_svc)
     form = ReservationForm(data={"restaurant_id": restaurant_id, "h": restaurant_id_hash})
     return render_template("reservation/partial/reservation_form.html", restaurant=restaurant, form=form)
 
@@ -75,12 +84,14 @@ def partial_reservation_form(
 @login_required
 @inject
 def save(
-    reservation_svc: ReservationService = Provide[Container.reservation_svc], cache: Cache = Provide[Container.cache]
+    restaurant_svc: RestaurantService = Provide[Container.restaurant_svc],
+    reservation_svc: ReservationService = Provide[Container.reservation_svc],
+    cache: Cache = Provide[Container.cache],
 ):
     restaurant_id = request.form["restaurant_id"]
     restaurant_id_hash = request.form["h"]
     valid_hash_supplied(restaurant_id, restaurant_id_hash)
-    restaurant = restaurant_from_cache(cache, int(restaurant_id))
+    restaurant = restaurant_from_cache(cache, int(restaurant_id), restaurant_svc)
 
     form: ReservationForm = ReservationForm(request.form)
     if not form.validate():
@@ -119,17 +130,19 @@ def save(
 def delete(
     restaurant_id: int,
     reservation_id: int,
+    restaurant_svc: RestaurantService = Provide[Container.restaurant_svc],
     reservation_svc: ReservationService = Provide[Container.reservation_svc],
     cache: Cache = Provide[Container.cache],
 ):
-    restaurant = restaurant_from_cache(cache, int(restaurant_id))
+    restaurant = restaurant_from_cache(cache, int(restaurant_id), restaurant_svc)
 
     try:
         reservation_svc.delete(reservation_id)
+        reservations = reservation_svc.get_reservation_for_restaurant(restaurant_id)
+        LOG.debug(f"got {len(reservations)} reservations")
+        return render_template(
+            "reservation/partial/reservation.html", reservations=reservations, restaurant=restaurant
+        )
     except Exception as e:
         LOG.error(f"could not delete reservation '{e}'")
 
-    # fetch the changed reservations
-    reservations = reservation_svc.get_reservation_for_restaurant(restaurant_id)
-    LOG.debug(f"got {len(reservations)} reservations")
-    return render_template("reservation/partial/reservation.html", reservations=reservations, restaurant=restaurant)

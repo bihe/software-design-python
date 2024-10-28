@@ -66,6 +66,10 @@ container-run: ## run the estaurant-app container
 	@echo "  >  run the container-image"
 	docker stop restaurant-app || true && docker rm restaurant-app || true && docker run -p 9000:9000 --name restaurant-app restaurant_app
 
+compose-run: ## start the deployment docker-compose
+	@echo "  >  start docker-compose"
+	docker compose -f ./container/compose.yaml rm && docker compose -f ./container/compose.yaml up --build
+
 ## Help:
 help: ## Show this help.
 	@echo ''

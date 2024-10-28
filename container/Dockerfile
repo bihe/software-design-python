@@ -18,6 +18,8 @@ COPY src ./src
 
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir .
+# we need mysql/mariadb support
+RUN pip install PyMySQL
 
 # ---------------------------------------------------------------------------
 # the second) stage is used for runtime/production
