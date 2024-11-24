@@ -131,7 +131,12 @@ REMARKS
     For technical information, typ
 ```
 
-## 4. Application directory structure
+## 4. Application structure
+The sample application creates a typically layered ("lasagna") architecture. One layer only interacts with another layer via defined interfaces. It should be prevented that layers are skipped. The following picture shows the basic idea:
+
+![lasagna architecture](./doc/lasagna-architecture.excalidraw.svg)
+
+
 There is **NO** one/correct approach on how to structure an application. The main goal is to have a structure and follow it and that the chosen structure is understood by the development team. 
 ```bash
 .
