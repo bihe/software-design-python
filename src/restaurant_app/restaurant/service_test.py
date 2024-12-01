@@ -23,7 +23,7 @@ def test_restaurant_open():
     # too early
     assert not svc.is_restaurant_open(1, datetime.date(2024, 9, 16), datetime.time(9, 0, 0), datetime.time(14, 0, 0))
     # too late
-    assert not svc.is_restaurant_open(1, datetime.date(2024, 9, 16), datetime.time(9, 0, 0), datetime.time(22, 30, 0))
+    assert not svc.is_restaurant_open(1, datetime.date(2024, 9, 16), datetime.time(11, 0, 0), datetime.time(22, 30, 0))
     # exact
     assert svc.is_restaurant_open(1, datetime.date(2024, 9, 16), datetime.time(10, 0, 0), datetime.time(22, 0, 0))
     # exact: the date 2024-09-17 is a Tuesday

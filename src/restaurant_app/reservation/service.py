@@ -57,8 +57,8 @@ class ReservationService:
         """
         Delete the reservation by the given id
         """
-        restaurant = self._reservation_repo.get_reservation_by_id(reservation_id)
-        if restaurant is None:
+        reservation = self._reservation_repo.get_reservation_by_id(reservation_id)
+        if reservation is None:
             raise NotFoundError(f"could not get reservation by id '{reservation_id}'")
 
         def work_in_transaction(session):
