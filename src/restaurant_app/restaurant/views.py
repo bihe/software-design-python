@@ -5,7 +5,6 @@ from dependency_injector.wiring import Provide, inject
 from flask import Blueprint, redirect, render_template, request, url_for
 
 from ..auth.views import login_required
-from ..infrastructure.cache import Cache
 from ..infrastructure.container import Container
 from ..infrastructure.logger import LOG
 from ..shared.errors import NotFoundError
@@ -21,13 +20,11 @@ bp = Blueprint("restaurant", __name__)
 @bp.get("/restaurants")
 @login_required
 @inject
-def index(
-    restaurant_svc: RestaurantService = Provide[Container.restaurant_svc], cache: Cache = Provide[Container.cache]
-):
+def index(restaurant_svc: RestaurantService = Provide[Container.restaurant_svc]):
     LOG.info("view restaurant/index")
     restaurants = restaurant_svc.get_all()
     LOG.debug(f"get {len(restaurants)} restaurants")
-    model_params = prepare_view_model(cache, restaurants=restaurants)
+    model_params = prepare_view_model(restaurants=restaurants)
     return render_template("restaurant/index.html", **model_params)
 
 
@@ -38,11 +35,7 @@ def get_time(item: List) -> datetime.time:
 @bp.route("/restaurant/<restaurant_id>", methods=["GET", "POST"])
 @login_required
 @inject
-def restaurant(
-    restaurant_id: int,
-    restaurant_svc: RestaurantService = Provide[Container.restaurant_svc],
-    cache: Cache = Provide[Container.cache],
-):
+def restaurant(restaurant_id: int, restaurant_svc: RestaurantService = Provide[Container.restaurant_svc]):
     form: RestaurantForm = None
 
     if request.method == "GET":
@@ -107,5 +100,5 @@ def restaurant(
             restaurant_svc.save(restaurant)
             return redirect(url_for("restaurant.index"))
 
-    model_params = prepare_view_model(cache, form=form)
+    model_params = prepare_view_model(form=form)
     return render_template("restaurant/detail.html", **model_params)

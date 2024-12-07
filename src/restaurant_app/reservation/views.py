@@ -41,7 +41,7 @@ def index(
     if restaurants is not None and len(restaurants) > 0:
         put_restaurants_to_cache(cache, restaurants)
 
-    model_params = prepare_view_model(cache, restaurants=restaurants)
+    model_params = prepare_view_model(restaurants=restaurants)
     return render_template("reservation/index.html", **model_params)
 
 
@@ -146,3 +146,4 @@ def delete(
     except Exception as e:
         LOG.error(f"could not delete reservation '{e}'")
 
+        LOG.error(f"could not delete reservation '{e}'")

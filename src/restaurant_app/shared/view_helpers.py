@@ -45,7 +45,7 @@ def delete_restaurants_from_cache(cache: Cache):
     cache.delete(restaurants_cache_key)
 
 
-def prepare_view_model(cache: Cache, **kwargs) -> Dict[str, Any]:
+def prepare_view_model(**kwargs) -> Dict[str, Any]:
     args = {}
     for key in kwargs.keys():
         args[key] = kwargs[key]
@@ -55,5 +55,5 @@ def prepare_view_model(cache: Cache, **kwargs) -> Dict[str, Any]:
     if user is not None:
         args["user"] = user
     else:
-        raise UserCacheMissError("cannot get the user from the cache!")
+        raise UserCacheMissError("cannot get the user!")
     return args
