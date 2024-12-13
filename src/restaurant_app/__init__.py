@@ -49,6 +49,7 @@ def create_app():
     from .infrastructure.container import Container
 
     container = Container()
+    # this is needed if you want to access the dependency injection container in unit-tests
     app.container = container
 
     # register error handlers

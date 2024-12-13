@@ -16,6 +16,8 @@ from .memory_cache import MemoryCache
 class Container(containers.DeclarativeContainer):
 
     # https://python-dependency-injector.ets-labs.org/wiring.html#making-injections-into-modules-and-class-attributes
+    # this configuration tells the dependency-injection framework where to "expect" the @inject annotation
+    # use python package paths (relative ones), to specify in which files (views) the @inject annotation is used
     wiring_config = containers.WiringConfiguration(
         packages=[__name__, "..restaurant.views", "..auth.views", "..reservation.views"]
     )
