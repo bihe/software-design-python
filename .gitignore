@@ -165,3 +165,6 @@ app.db
 app.log
 
 lcov.info
+.fleet/
+.DS_Store
+uv.lock
