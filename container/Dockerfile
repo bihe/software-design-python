@@ -43,8 +43,6 @@ RUN useradd -d /opt/restaurant_app restaurant-app-user
 # copy our project to the application directory
 RUN chown restaurant-app-user /opt/restaurant_app
 COPY --chown=restaurant-app-user ./app.db /opt/restaurant_app/app.db
-COPY --chown=restaurant-app-user ./static /opt/restaurant_app/static
-COPY --chown=restaurant-app-user ./templates /opt/restaurant_app/templates
 COPY --from=builder --chown=restaurant-app-user /app/src/run.py /opt/restaurant_app/run.py
 COPY --from=builder --chown=restaurant-app-user /app/src/restaurant_app /opt/restaurant_app/restaurant_app
 

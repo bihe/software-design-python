@@ -10,10 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "src/restaurant_app",
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "1",
-                "SECRET_KEY": "very-secret"
+                "FLASK_APP": "src/restaurant_app"
             },
             "args": [
                 "run"

@@ -1,6 +1,7 @@
 import os
 from os import path
 
+from dotenv import dotenv_values
 from flask import Flask, redirect, url_for
 
 from .cli.database import db_cli
@@ -34,11 +35,13 @@ def create_app():
     setup_environment(basedir)
     setup_logging(basedir)
 
-    app = Flask("restaurant-app")
+    app = Flask(__name__)
+    print(f"Flask app is created with context '{__name__}'")
     app_environment = os.getenv("FLASK_ENV", "production")
     print("using environment: %s" % app_environment)
     config = setup_config(basedir, app_environment)
     app.config.from_object(config)
+    app.config.from_mapping(dotenv_values())
 
     # add the logic to enable cli commands
     app.cli.add_command(db_cli)
