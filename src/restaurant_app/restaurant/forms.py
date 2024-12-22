@@ -1,9 +1,10 @@
-from wtforms import BooleanField, Form, HiddenField, SelectField, StringField, TimeField, validators
+from flask_wtf import FlaskForm
+from wtforms import BooleanField, HiddenField, SelectField, StringField, TimeField, validators
 
 from ..shared.form_validators import Gt, Lt
 
 
-class RestaurantForm(Form):
+class RestaurantForm(FlaskForm):
     id = HiddenField("id")
     h = HiddenField("h")
     name = StringField("Name", [validators.DataRequired(), validators.Length(max=255)])

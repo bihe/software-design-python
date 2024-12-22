@@ -1,6 +1,7 @@
 from datetime import date
 
-from wtforms import DateField, Form, HiddenField, IntegerField, StringField, TimeField, ValidationError, validators
+from flask_wtf import FlaskForm
+from wtforms import DateField, HiddenField, IntegerField, StringField, TimeField, ValidationError, validators
 
 from ..shared.form_validators import Gt, Lt
 
@@ -20,7 +21,7 @@ def date_current_or_future(form, field):
         raise ValidationError("Cannot make reservations in the past!")
 
 
-class ReservationForm(Form):
+class ReservationForm(FlaskForm):
     restaurant_id = HiddenField("restaurant_id")
     h = HiddenField("h")
     name = StringField("Reservation name", [validators.DataRequired(), validators.Length(max=255)])

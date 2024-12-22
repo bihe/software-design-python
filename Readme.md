@@ -143,23 +143,23 @@ There is **NO** one/correct approach on how to structure an application. The mai
 ├── container                       # Dockerfile and compose file to deploy/run the application in production
 ├── data                            # Initial data for the application; is used by the cli implementation to load data into db
 ├── doc                             # Generated and manually created documentation as PlantUML and Markdown files
-├── src                             # The python source-code of the application
-│   └── restaurant_app              # The python module restaurant_app holding the application logic
-│       ├── auth                    # Authentication logic (very, very simple - not usable for any production!)
-│       ├── cli                     # The command line interface for the application; mainly commands for the database
-│       ├── infrastructure          # Basic infrastructure code for the application, config/logging/dependency-injection/cache/...
-│       ├── reservation             # The reservation logic of the application defines how to reserve a table
-│       ├── restaurant              # The restaurant logic deals with the basic masterdata of a restaurant
-│       ├── shared                  # Components and functions used across the application (could be util as well)
-│       └── store                   # The entity logic of the application using the ORM framework (SqlAlchemy)
-├── static                          # Static content served via the http server
-│   ├── css                         # Stylesheets
-│   │   └── fonts                   # Font-files (bootstrap icons)
-│   ├── img                         # Images used in views
-│   └── js                          # Javascript used in views
-└── templates                       # jinja templates to generate views in HTML
-    ├── auth                        # Templates used for authentication logic (login)
-    └── restaurant                  # Templates used for restaurant logic
+└── src                             # The python source-code of the application
+    └── restaurant_app              # The python module restaurant_app holding the application logic
+        ├── auth                    # Authentication logic (very, very simple - not usable for any production!)
+        ├── cli                     # The command line interface for the application; mainly commands for the database
+        ├── infrastructure          # Basic infrastructure code for the application, config/logging/dependency-injection/cache/...
+        ├── reservation             # The reservation logic of the application defines how to reserve a table
+        ├── restaurant              # The restaurant logic deals with the basic masterdata of a restaurant
+        ├── shared                  # Components and functions used across the application (could be util as well)
+        ├── static                  # Static content served via the http server
+        │   ├── css                 # Stylesheets
+        │   │   └── fonts           # Font-files (bootstrap icons)
+        │   ├── img                 # Images used in views
+        │   └── js                  # Javascript used in views
+        ├── store                   # The entity logic of the application using the ORM framework (SqlAlchemy)
+        └── templates               # jinja templates to generate views in HTML
+            ├── auth                # Templates used for authentication logic (login)
+            └── restaurant          # Templates used for restaurant logic
 
 21 directories
 ```
