@@ -40,7 +40,7 @@ run: ## run the python application
 
 run-flask: ## run the application using flask
 	@echo "  >  executing flask application"
-	flask --app src/restaurant_app run
+	FLASK_RUN_PORT=9000 flask --app src/restaurant_app run
 
 test: ## run the unit-tests of the application
 	@echo "  >  run unit tests"

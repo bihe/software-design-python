@@ -10,3 +10,4 @@ src/restaurant_app.egg-info/
 **/*_test.py
 **/*_test_*.py
 **/development_config.yaml
+src/.env/
