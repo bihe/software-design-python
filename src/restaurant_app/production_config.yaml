@@ -5,6 +5,6 @@ TESTING: false
 SECRET_KEY: very-secret-key
 
 # database settings
-DATABASE_URI: "sqlite:///app.db"
-#DATABASE_URI: "mariadb+pymysql://root:root-password@localhost/RESTAURANTS?charset=utf8mb4"
+#DATABASE_URI: "sqlite:///app.db"
+DATABASE_URI: "mariadb+pymysql://root:root-password@localhost/RESTAURANTS?charset=utf8mb4"
 DATABASE_ECHO: false
