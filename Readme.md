@@ -120,6 +120,7 @@ DESCRIPTION
         db-import           import initial data into the database vai ./data/initial_restaurant_data.json
         container-build     create container-image of the application
         container-run       run the application container
+        compose-run         start the deployment docker-compose
         help, -?            show this help message
 
 
