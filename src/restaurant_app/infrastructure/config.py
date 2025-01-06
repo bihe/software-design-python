@@ -28,12 +28,12 @@ class Config(yaml.YAMLObject):
                 # attributes. this is a bit strange, but it works with the dynamic nature of python
                 setattr(Config, m, data_map[m])
 
-            # overwrite by environment-vars if available
-            # note: earlier we have used dotenv to load specific environment variables from an .env file
-            env_var = os.getenv(m)
-            if env_var is not None and not env_var == "":
-                setattr(self, m, env_var)
-                setattr(Config, m, env_var)
+                # overwrite by environment-vars if available
+                # note: earlier we have used dotenv to load specific environment variables from an .env file
+                env_var = os.getenv(m)
+                if env_var is not None and not env_var == "":
+                    setattr(self, m, env_var)
+                    setattr(Config, m, env_var)
 
 
 def setup_config(base_path, app_environment) -> Config:

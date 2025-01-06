@@ -5,6 +5,7 @@ from flask import session
 
 from ..auth.models import User
 from ..infrastructure.cache import Cache
+from ..infrastructure.config import Config
 from ..restaurant.models import RestaurantModel
 from .errors import UserCacheMissError
 
@@ -49,6 +50,15 @@ def prepare_view_model(**kwargs) -> Dict[str, Any]:
     args = {}
     for key in kwargs.keys():
         args[key] = kwargs[key]
+
+    # system-information
+    dbType: str = "unknown"
+    if "sqlite" in Config.DATABASE_URI:
+        dbType = "sqlite"
+    elif "mysql" in Config.DATABASE_URI or "mariadb" in Config.DATABASE_URI:
+        dbType = "mariadb"
+
+    args["dbtype"] = dbType
 
     # retrieve the user-id from the session
     user = get_user_from_session()

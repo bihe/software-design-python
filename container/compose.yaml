@@ -33,10 +33,16 @@ services:
       - frontend
     ports:
       - "9000:9000"
+    # https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/
     environment:
-      - ENV FLASK_ENV=production
-      - ENV FLASK_DEBUG=0
-      - ENV DATABASE_URI="mariadb+pymysql://root:root-password/RESTAURANTS?charset=utf8mb4"
+      FLASK_ENV: "production"
+      FLASK_DEBUG: 0
+      SECRET_KEY: "CUi0w3Ezqn8GZinmS@H*YMKlWVVVJaRH"
+      # the hostname "database" refers to the service with name database - see above
+      # SYNTAX:
+      # type :// user : password (ensure URL-encoding) @ host : port / database name ? options
+      # https://docs.sqlalchemy.org/en/20/dialects/mysql.html
+      DATABASE_URI: "mariadb+pymysql://root:root-password@database:3306/RESTAURANTS?charset=utf8mb4"
     depends_on:
       database:
         condition: service_healthy

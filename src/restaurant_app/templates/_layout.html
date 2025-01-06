@@ -49,6 +49,12 @@
               </button>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item"><i class="bi bi-envelope-at"></i> {{ user.email }}</a></li>
+                {% if dbtype == "sqlite" %}
+                  <li><a class="dropdown-item"><img height="35" src="{{ url_for('static', filename='img/sqlite.svg') }}" /> using <strong>SQLite</strong></a></li>
+                {% endif %}
+                {% if dbtype == "mariadb" %}
+                  <li><a class="dropdown-item"><img height="25" src="{{ url_for('static', filename='img/mariadb.svg') }}" /> using <strong>MariaDB</strong></a></li>
+                {% endif %}
                 <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
               </ul>
             </div>
