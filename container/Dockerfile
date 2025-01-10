@@ -31,7 +31,6 @@ COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/pytho
 
 # still we needs some additional stuff
 # we need mariadb library (very, very similar to mysql) to access the db
-# this is the runtime library dependency of mysqlclient
 RUN apk add --no-cache mariadb-connector-c
 
 # it is a best practise to create a seperate user and not execute everything with root

@@ -1,9 +1,6 @@
 services:
   database:
     image: mariadb:11-noble # https://hub.docker.com/_/mariadb
-    # would be better to have a local folder where the database files are persisted
-    #volumes:
-    #- ./database-data:/var/lib/mysql
     networks:
       - backend
     environment:
@@ -14,6 +11,7 @@ services:
     volumes:
       # https://hub.docker.com/_/mariadb @ Initializing the database contents
       - "./create-db-RESTAURANTS.sql:/docker-entrypoint-initdb.d/1.sql"
+      - "./database-data:/var/lib/mysql"
     # create a healthcheck to determine when the database is up and running
     # only after the healthcheck is OK, start the web-application --> @see depends_on
     healthcheck:
@@ -34,9 +32,12 @@ services:
     ports:
       - "9000:9000"
     # https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/
+    # see 12-factor app: https://12factor.net/config
     environment:
       FLASK_ENV: "production"
       FLASK_DEBUG: 0
+      # the configuration-logic "overwrites" the config values of the config-file with environment-variable values
+      # infrastructure/config.py:Config.load_from_data
       SECRET_KEY: "CUi0w3Ezqn8GZinmS@H*YMKlWVVVJaRH"
       # the hostname "database" refers to the service with name database - see above
       # SYNTAX:
