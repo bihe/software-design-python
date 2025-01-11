@@ -51,6 +51,12 @@ services:
       database:
         condition: service_healthy
         restart: true
+    # https://docs.docker.com/reference/compose-file/deploy/#resources
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.50'
+    #       memory: '250M'
 
 # define networks for communication between containers
 networks:
