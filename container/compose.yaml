@@ -27,7 +27,7 @@ services:
       dockerfile: ./container/Dockerfile
     image: restaurant_app
     networks:
-      - backend
+      - backend       # the application can create a connection to services which are defined in the backend-network --> database
       - frontend
     ports:
       - "9000:9000"
@@ -40,15 +40,19 @@ services:
       # infrastructure/config.py:Config.load_from_data
       SECRET_KEY: "CUi0w3Ezqn8GZinmS@H*YMKlWVVVJaRH"
       # the hostname "database" refers to the service with name database - see above
+      # the service-name is also the hostname of the running container.
       # SYNTAX:
       # type :// user : password (ensure URL-encoding) @ host : port / database name ? options
       # https://docs.sqlalchemy.org/en/20/dialects/mysql.html
       DATABASE_URI: "mariadb+pymysql://root:root-password@database:3306/RESTAURANTS?charset=utf8mb4"
     depends_on:
+      # our application only starts fully, once the dependent service 'database' is up and running
+      # it referes to the system status - which is derived from the healthcheck defined above.
       database:
         condition: service_healthy
         restart: true
 
+# define networks for communication between containers
 networks:
   backend:
   frontend:
